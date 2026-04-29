@@ -1,10 +1,10 @@
-# T02 – Redes de Dados I
+﻿# T02 – Redes de Dados I
 
-# Relatório 15: Configuração de **IDS** de Rede usando **Suricata no Debian** (VM no VirtualBox)
+# Relatório 11: Configuração de **IDS** de Rede usando **Suricata no Debian** (VM no VirtualBox)
 
 Este relatório descreve a configuração de um **IDS** com **Suricata** **diretamente no Debian (uma única VM)**, monitorando o tráfego da própria VM para a **Internet**. Usaremos **apenas regras locais (Custom Rules)**, sem baixar rulesets externos. O objetivo é **instalar**, **iniciar** o Suricata em **modo IDS**, **gerar tráfego didático** (via navegador/`curl`) e **analisar os alertas** no `fast.log`/`eve.json`.
 
-* **Material de apoio:** ```https://github.com/vin1sss/T02---Redes-de-Dados-1/```
+* **Material de apoio:** `https://github.com/vin1sss/T02---Redes-de-Dados-1/`
 
 ---
 
@@ -36,11 +36,11 @@ A única VM (Debian Desktop) atuará como **sensor IDS** (Suricata) e como **cli
 
 **VirtualBox (1 VM):**
 
-* **VM1 (Debian Desktop, com Suricata)**
+* **user 1 - Debian (com Suricata)**
 
   * **Adapter 1:** **NAT** (DHCP do VirtualBox)
 
-> **Topologia:** **VM1 ↔ NAT (VBox) ↔ Internet**. O Suricata escuta a **interface de saída** (tipicamente `enp0s3`).
+> **Topologia:** **user 1 - Debian ↔ NAT (VBox) ↔ Internet**. O Suricata escuta a **interface de saída** (tipicamente `enp0s3`).
 
 ---
 
@@ -66,10 +66,10 @@ sudo apt update && sudo apt install -y dnsutils net-tools curl wget suricata tcp
 
 > **O que cada regra faz (antes do código):**
 >
-> * **SID 1002001 (URI):** alerta quando a **URI** da requisição HTTP contém `/**SURICATA_BROWSER_URI_01**`. Demonstra **inspeção de caminho** (HTTP em claro).
-> * **SID 1002002 (BODY/POST):** alerta quando o **corpo** da requisição HTTP contém `**SURICATA_BROWSER_BODY_02**`. Demonstra **inspeção de payload** em **POST/PUT**.
-> * **SID 1002003 (HEADER):** alerta quando um **cabeçalho HTTP** contém `**X-Trigger-Lab: 1**`. Demonstra **inspeção de cabeçalhos** (ex.: segurança, conformidade, políticas).
-> * **SID 1002004 (DNS):** alerta quando a **consulta DNS** contém `**suricata-trigger-lab.example**`. Demonstra **visibilidade de DNS** mesmo que o domínio não exista.
+> * **SID 1002001 (URI):** alerta quando a **URI** da requisição HTTP contém `/SURICATA_BROWSER_URI_01`. Demonstra **inspeção de caminho** (HTTP em claro).
+> * **SID 1002002 (BODY/POST):** alerta quando o **corpo** da requisição HTTP contém `SURICATA_BROWSER_BODY_02`. Demonstra **inspeção de payload** em **POST/PUT**.
+> * **SID 1002003 (HEADER):** alerta quando um **cabeçalho HTTP** contém `X-Trigger-Lab: 1`. Demonstra **inspeção de cabeçalhos** (ex.: segurança, conformidade, políticas).
+> * **SID 1002004 (DNS):** alerta quando a **consulta DNS** contém `suricata-trigger-lab.example`. Demonstra **visibilidade de DNS** mesmo que o domínio não exista.
 
 > **Arquivo:** `/etc/suricata/rules/local.rules` (uma **linha por regra**)
 
@@ -113,7 +113,7 @@ sudo tail -n 15 /var/log/suricata/suricata.log
 
 ---
 
-## V. Procedimentos (Passo a Passo — **VM1 ↔ Internet**)
+## V. Procedimentos (Passo a Passo — **user 1 - Debian ↔ Internet**)
 
 Abra dois terminais:
 
@@ -201,10 +201,10 @@ dig +short suricata-trigger-lab.example >/dev/null
 
 | Cenário | Tráfego                      | Regra envolvida (msg)                        | SID     | Resultado esperado | Onde verificar     |
 | :-----: | ---------------------------- | -------------------------------------------- | ------- | ------------------ | ------------------ |
-|    1    | VM1 → Internet (HTTP/URI)    | `CUSTOM BROWSER - HTTP URI trigger`          | 1002001 | **Alertas**        | `fast.log` / `eve` |
-|    2    | VM1 → Internet (HTTP/Body)   | `CUSTOM BROWSER - HTTP client body trigger`  | 1002002 | **Alertas**        | `fast.log` / `eve` |
-|    3    | VM1 → Internet (HTTP/Header) | `CUSTOM BROWSER - HTTP header X-Trigger-Lab` | 1002003 | **Alertas**        | `fast.log` / `eve` |
-|    4    | VM1 → Internet (DNS)         | `CUSTOM BROWSER - DNS query trigger`         | 1002004 | **Alertas**        | `fast.log` / `eve` |
+|    1    | user 1 - Debian → Internet (HTTP/URI)    | `CUSTOM BROWSER - HTTP URI trigger`          | 1002001 | **Alertas**        | `fast.log` / `eve` |
+|    2    | user 1 - Debian → Internet (HTTP/Body)   | `CUSTOM BROWSER - HTTP client body trigger`  | 1002002 | **Alertas**        | `fast.log` / `eve` |
+|    3    | user 1 - Debian → Internet (HTTP/Header) | `CUSTOM BROWSER - HTTP header X-Trigger-Lab` | 1002003 | **Alertas**        | `fast.log` / `eve` |
+|    4    | user 1 - Debian → Internet (DNS)         | `CUSTOM BROWSER - DNS query trigger`         | 1002004 | **Alertas**        | `fast.log` / `eve` |
 
 ### 2) Coleta rápida de evidências (para anexar ao relatório)
 
