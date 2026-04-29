@@ -59,17 +59,23 @@ Aplicaremos **regras** (ex.: **bloquear HTTP**, **bloquear um site específico**
 
   * **Habilitar Placa de Rede**
   * **Conectado a:** **NAT**
+  <img width="806" height="377" alt="image" src="https://github.com/user-attachments/assets/ed4886ae-aed5-4681-b021-6a73fbf13397" />
+
 * **Adaptador 2 (LAN):**
 
   * **Habilitar Placa de Rede**
   * **Conectado a:** **Internal Network**
   * **Nome:** **`LAN_PFS`**  ← **digite exatamente este nome** (se não existir, o VirtualBox cria ao salvar).
+  <img width="800" height="375" alt="image" src="https://github.com/user-attachments/assets/ca317cf7-a5c4-4fff-b7b3-fd1f3e8ca574" />
+
 * **OK**.
 
 2. **user 2 - Debian — conectar à mesma LAN**
 
 * **Botão direito** na VM **user 2 - Debian** → **Configurações** → **Rede**.
 * **Adaptador 1:** **Internal Network** → **Nome:** **`LAN_PFS`**.
+  <img width="802" height="334" alt="image" src="https://github.com/user-attachments/assets/f28dd00a-cc73-4b28-9f10-47232d2b9d10" />
+
 * **OK**.
 
 3. **Inicialização e verificação rápida**
