@@ -78,11 +78,15 @@ Abra o Wireshark com `sudo wireshark` e selecione a **interface da NAT Network**
    * Marque **Habilitar DHCP**
    * Confirme com **Aplicar**
 
+<img width="1190" height="862" alt="image" src="https://github.com/user-attachments/assets/a890ec72-c5da-49a0-81c3-e21ee7deb404" />
+
 4. **Vincular cada VM à `NatNetwork`:**
 
    * Para **user 1 - Debian** e **user 2 - Debian** → **Configurações** (*Settings*) → **Rede** (*Network*)
    * **Adaptador 1** (*Adapter 1*) → **Conectado a:** *NAT Network* → **Nome:** `NatNetwork`
    * OK e **iniciar** as VMs
+  
+<img width="808" height="345" alt="image" src="https://github.com/user-attachments/assets/3a4a1d8a-63b4-4c48-b06a-d65de72964a2" />
 
 5. **Verificação rápida dentro das VMs:**
 
@@ -90,6 +94,7 @@ Abra o Wireshark com `sudo wireshark` e selecione a **interface da NAT Network**
    ip a
    ping -c2 <IP_USER1>   # de user 2 - Debian para user 1 - Debian
    ```
+<img width="1500" height="564" alt="image" src="https://github.com/user-attachments/assets/41fda5a8-7fe4-400c-98ac-8a995fc836cb" />
 
 ### A) user 1 - Debian (Servidor)
 
