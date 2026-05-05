@@ -34,30 +34,26 @@ A única VM (Debian Desktop) atuará como **sensor IDS** (Suricata) e como **cli
 
 ## III. Ambiente e Topologia
 
-**VirtualBox (1 VM):**
+**Topologia lógica (1 VM):**
 
-* **user 1 - Debian (com Suricata)**
+* **user 1 - Debian (com Suricata)** atuando como sensor IDS e cliente de teste.
+* Saída para Internet através de NAT.
 
-  * **Adapter 1:** **NAT** (DHCP do VirtualBox)
-  * **Recursos da VM:** **6 GB de RAM** e **3 núcleos de CPU**
-
-> **Topologia:** **user 1 - Debian ↔ NAT (VBox) ↔ Internet**. O Suricata escuta a **interface de saída** (tipicamente `enp0s3`).
+> **Topologia:** **user 1 - Debian ↔ NAT (VBox) ↔ Internet**.
 
 ---
 
 ## IV. Instalação e Preparação
 
-### 0) Verificações iniciais
+### 0) Preparar ambiente no VirtualBox (padrão do laboratório)
 
-#### Após ligar a VM:
+* **VM:** `user 1 - Debian`
+* **Adapter 1:** **NAT** (DHCP do VirtualBox)
+* **Recursos da VM:** **6 GB de RAM** e **3 núcleos de CPU**
 
-```bash
-ip a                    # deve obter IP 10.0.2.x (NAT do VBox)
-ping -c2 1.1.1.1        # checar saída para internet
-ip route get 1.1.1.1    # confirmar interface de saída (ex.: enp0s3)
-```
+### 1) Verificações iniciais e padronização de rede
 
-#### Se a VM estava com IP estático: resetar para DHCP (VirtualBox NAT/NAT Network)
+#### Primeiro, padronize a rede em DHCP (passo padrão):
 
 ```bash
 IFACE=$(ip route | awk '/default/ {print $5; exit}')
@@ -67,13 +63,29 @@ sudo dhclient "$IFACE"
 ip -4 a show "$IFACE"
 ```
 
-### A) Instalar utilitários e Suricata
+#### Após ligar a VM:
+
+```bash
+ip a                    # deve obter IP 10.0.2.x (NAT do VBox)
+ping -c2 1.1.1.1        # checar saída para internet
+ip route get 1.1.1.1    # confirmar interface de saída (ex.: enp0s3)
+```
+
+### A) Prevenir lock do `apt` (passo padrão antes da instalação)
+
+```bash
+sudo systemctl stop packagekit || true
+sudo pkill -x packagekitd || true
+sudo dpkg --configure -a
+```
+
+### B) Instalar utilitários e Suricata
 
 ```bash
 sudo apt update && sudo apt install -y dnsutils net-tools curl wget suricata tcpdump jq
 ```
 
-### B) Regras locais (Suricata 7 — sticky buffers + classtype)
+### C) Regras locais (Suricata 6/7 — sticky buffers + classtype)
 
 > **O que cada regra faz (antes do código):**
 >
@@ -100,7 +112,7 @@ sudo suricata -T -S /etc/suricata/rules/local.rules -v
 # esperado: "4 rules successfully loaded, 0 failed"
 ```
 
-### C) Iniciar o Suricata (modo IDS) — **manual, sem `--set`**
+### D) Iniciar o Suricata (modo IDS) — **manual, sem `--set`**
 
 > Em Debian, usar `--set outputs.*` pode causar erro de “child node (null)”. Usaremos o YAML padrão.
 
@@ -111,6 +123,7 @@ sudo pkill -x suricata || true
 sudo rm -f /var/run/suricata.pid /var/log/suricata/fast.log
 
 # subir em daemon na interface correta (ex.: enp0s3)
+# se sua interface tiver outro nome, descubra com: ip route get 1.1.1.1
 sudo suricata -i enp0s3 -S /etc/suricata/rules/local.rules -l /var/log/suricata -D
 
 # conferir que está ativo
@@ -217,7 +230,7 @@ dig +short suricata-trigger-lab.example >/dev/null
 |    3    | user 1 - Debian → Internet (HTTP/Header) | `CUSTOM BROWSER - HTTP header X-Trigger-Lab` | 1002003 | **Alertas**        | `fast.log` / `eve` |
 |    4    | user 1 - Debian → Internet (DNS)         | `CUSTOM BROWSER - DNS query trigger`         | 1002004 | **Alertas**        | `fast.log` / `eve` |
 
-### 2) Coleta rápida de evidências (para anexar ao relatório)
+### 2) Coleta rápida e critérios de sucesso (guia)
 
 ```bash
 # Últimos alertas (formato fast)
@@ -227,6 +240,12 @@ tail -n 20 /var/log/suricata/fast.log
 jq -r 'select(.event_type=="alert") | "\(.timestamp) SID=\(.alert.signature_id) MSG=\(.alert.signature) \(.src_ip):\(.src_port) -> \(.dest_ip):\(.dest_port)"' \
   /var/log/suricata/eve.json | tail -n 10
 ```
+
+**Critérios de sucesso da execução:**
+
+* `suricata -T` retorna `4 rules successfully loaded, 0 rules failed`.
+* Suricata em execução (`ps aux | grep '[s]uricata'`) e sem erro crítico no `suricata.log`.
+* Pelo menos um alerta esperado aparece em `fast.log` ou `eve.json` após os testes.
 
 ---
 
@@ -246,10 +265,12 @@ Com **Suricata na própria VM** e **regras locais** simples, comprovamos a detec
      `sudo tail -n 30 /var/log/suricata/suricata.log`
   3. Verifique **tráfego** efetivo na interface:
      `sudo tcpdump -ni enp0s3 'port 80 or port 53' -c 10`
+     (se necessário, substitua `enp0s3` pela interface indicada por `ip route get 1.1.1.1`)
 
 * **Erro “Failed to lookup configuration child node: (null)” ao iniciar:**
   Não use `--set outputs.*` no Debian. Inicie assim:
   `sudo suricata -i enp0s3 -S /etc/suricata/rules/local.rules -l /var/log/suricata -D`
+  (se a interface não for `enp0s3`, ajuste o nome da interface)
 
 * **`pidfile` “stale” / conflito de instância:**
 
@@ -269,3 +290,6 @@ Com **Suricata na própria VM** e **regras locais** simples, comprovamos a detec
   Para POST/HEADER, rode em paralelo:
   `sudo tcpdump -A -ni enp0s3 'port 80' -c 10`
   e verifique o **`POST`**, o **corpo** e o cabeçalho **`X-Trigger-Lab`** em texto.
+
+* **Classificação diferente no log:**
+  Dependendo do mapeamento interno de classificação, `classtype:attempted-recon` pode aparecer como **Attempted Information Leak** no `fast.log`.

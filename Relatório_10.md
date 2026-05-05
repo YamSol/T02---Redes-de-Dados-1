@@ -29,6 +29,8 @@ Nesta atividade, você configurará duas VMs (**user 1 - Debian** e **user 2 - D
 
 **VirtualBox — NAT Network:** `NatNetwork`
 
+> **Atenção (didático):** neste relatório usamos **NAT Network** (rede compartilhada entre VMs). Isso é diferente de **NAT** simples por VM (*Attached to: NAT*), que normalmente não permite comunicação direta entre as VMs.
+
 * **user 1 - Debian (Servidor):** Apache (80/443)
 * **user 2 - Debian (Cliente):** `curl` e **Wireshark** (captura local)
 
@@ -209,6 +211,8 @@ ss -tulpn | grep :443
 curl -vk https://<IP_USER1>
 ```
 
+> O `-k` é intencional no laboratório: ele permite seguir com certificado autoassinado.
+
 6. No Wireshark, usar filtro `tls` ou `tcp.port == 443`.
    **O que observar:** pacotes de **handshake TLS** (ClientHello/ServerHello/Certificado) e **payload cifrado**.
 
@@ -229,6 +233,11 @@ curl -vk https://<IP_USER1>
 * HTTPS: `tls` *(ou `tcp.port == 443`)*
 * Handshake específico: `tls.handshake`
 * Verificar string no tráfego claro: `frame contains "HELLO_TLS_HTTP"`
+
+### 3) Critérios de sucesso do experimento (guia)
+
+* **Cenário HTTP (porta 80):** `curl -v http://<IP_USER1>` retorna conteúdo e o Wireshark mostra `GET`/`200 OK` com payload legível.
+* **Cenário HTTPS (porta 443):** `curl -vk https://<IP_USER1>` funciona, e no Wireshark aparecem `ClientHello`/`ServerHello` com payload cifrado.
 
 ---
 

@@ -2,7 +2,7 @@
 
 # Relatório 12: Configuração de Firewall de Rede usando **pfSense** (VMs no VirtualBox)
 
-Este relatório descreve a configuração de um **firewall pfSense** atuando como **gateway/NAT e filtro** para uma rede interna com **duas VMs**: **user 2 - Debian** e **pfSense**. O objetivo é **montar o ambiente**, aplicar **regras de firewall** típicas e **validar o comportamento** por meio de testes práticos e análise de **logs** no pfSense.
+Este relatório descreve a configuração de um **firewall pfSense** atuando como **gateway/NAT e filtro** para uma rede interna com **duas VMs**: **pfSense** (gateway/firewall) e **user 2 - Debian** (cliente). O objetivo é **montar o ambiente**, aplicar **regras de firewall** típicas e **validar o comportamento** por meio de testes práticos e análise de **logs** no pfSense.
 
 * **Material de apoio:** `https://github.com/vin1sss/T02---Redes-de-Dados-1/`
 
@@ -153,6 +153,7 @@ curl -v https://example.com       # deve OK
 
 > **Como funciona:** no pfSense, um **Alias** do tipo **Host(s)** aceita **FQDN (Fully Qualified Domain Name)**. O pfSense resolve esse nome para IP(s) e a **regra de bloqueio** usa esse alias como **destino**.
 > *Obs.: em sites atrás de CDNs os IPs podem mudar; para fins de laboratório, o método é suficiente.*
+> *Obs. 2: a atualização do alias por FQDN pode levar alguns minutos; em sala, aguarde um curto intervalo antes de repetir o teste.*
 
 1. **Criar o Alias (pfSense WebGUI) — Firewall > Aliases > Add**
 
@@ -238,6 +239,12 @@ ping -c 2 192.168.1.1     # deve OK
 
 * **pfSense → Status > System Logs > Firewall** (filtro **Interface = LAN**).
 * Correlacione **timestamp** dos testes com registros **pass/block**.
+
+### 3) Critérios de sucesso do experimento (guia)
+
+* **Cenário 1:** HTTP (80) bloqueado e HTTPS permitido a partir do user 2 - Debian.
+* **Cenário 2:** `www.wikipedia.org` bloqueado via alias, com outros sites liberados.
+* **Cenário 3:** ICMP para Internet bloqueado e ICMP para gateway permitido (quando a exceção for aplicada acima da regra de bloqueio).
 
 ---
 
