@@ -39,6 +39,7 @@ A única VM (Debian Desktop) atuará como **sensor IDS** (Suricata) e como **cli
 * **user 1 - Debian (com Suricata)**
 
   * **Adapter 1:** **NAT** (DHCP do VirtualBox)
+  * **Recursos da VM:** **6 GB de RAM** e **3 núcleos de CPU**
 
 > **Topologia:** **user 1 - Debian ↔ NAT (VBox) ↔ Internet**. O Suricata escuta a **interface de saída** (tipicamente `enp0s3`).
 
@@ -54,6 +55,16 @@ A única VM (Debian Desktop) atuará como **sensor IDS** (Suricata) e como **cli
 ip a                    # deve obter IP 10.0.2.x (NAT do VBox)
 ping -c2 1.1.1.1        # checar saída para internet
 ip route get 1.1.1.1    # confirmar interface de saída (ex.: enp0s3)
+```
+
+#### Se a VM estava com IP estático: resetar para DHCP (VirtualBox NAT/NAT Network)
+
+```bash
+IFACE=$(ip route | awk '/default/ {print $5; exit}')
+sudo dhclient -r "$IFACE" || true
+sudo ip addr flush dev "$IFACE"
+sudo dhclient "$IFACE"
+ip -4 a show "$IFACE"
 ```
 
 ### A) Instalar utilitários e Suricata

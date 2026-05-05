@@ -38,9 +38,11 @@ Aplicaremos **regras** (ex.: **bloquear HTTP**, **bloquear um site específico**
 
   * **Adapter 1 (WAN):** **NAT** (DHCP do VBox).
   * **Adapter 2 (LAN):** **Internal Network** chamada **`LAN_PFS`** (pfSense atende esta LAN).
+  * **Recursos da VM:** **6 GB de RAM** e **3 núcleos de CPU**
 * **user 2 - Debian**
 
   * **Adapter 1:** **Internal Network** **`LAN_PFS`** (IP via **DHCP** do pfSense).
+  * **Recursos da VM:** **6 GB de RAM** e **3 núcleos de CPU**
 
 > **Assunção para o lab:** usar a **configuração padrão do pfSense** para LAN (ex.: `192.168.1.1/24` com DHCP habilitado). Não trataremos o “primeiro setup” do pfSense neste relatório.
 
@@ -87,6 +89,16 @@ Aplicaremos **regras** (ex.: **bloquear HTTP**, **bloquear um site específico**
   ip a                 # deve obter IP na sub-rede da LAN (ex.: 192.168.1.x)
   ping -c2 192.168.1.1 # (opcional) gateway do pfSense
   ```
+
+4. **Se o `user 2 - Debian` estava com IP estático, resetar para DHCP da LAN do pfSense:**
+
+   ```bash
+   IFACE=$(ip route | awk '/default/ {print $5; exit}')
+   sudo dhclient -r "$IFACE" || true
+   sudo ip addr flush dev "$IFACE"
+   sudo dhclient "$IFACE"
+   ip -4 a show "$IFACE"
+   ```
 
 ### A) user 2 - Debian
 

@@ -35,6 +35,7 @@ Nesta atividade, você configurará duas VMs (**user 1 - Debian** e **user 2 - D
 > **Configuração de Adaptadores (todas as VMs)**
 > **Adapter único:** **Attached to:** *NAT Network*
 > **Name:** `NatNetwork` (**DHCP: On**)
+> **Recursos da VM (todas as VMs):** **6 GB de RAM** e **3 núcleos de CPU**
 > (uma única placa por VM; Internet + comunicação entre VMs; sem endereçamento manual)
 
 ### 1) IPs via DHCP (sem endereçamento manual)
@@ -88,13 +89,30 @@ Abra o Wireshark com `sudo wireshark` e selecione a **interface da NAT Network**
   
 <img width="808" height="345" alt="image" src="https://github.com/user-attachments/assets/3a4a1d8a-63b4-4c48-b06a-d65de72964a2" />
 
-5. **Verificação rápida dentro das VMs:**
+5. **Ajustar recursos de hardware das VMs (user 1 - Debian e user 2 - Debian):**
+
+   * VirtualBox → **Configurações** → **Sistema** → **Placa-mãe** → **Memória Base: `6144 MB` (6 GB)**
+   * VirtualBox → **Configurações** → **Sistema** → **Processador** → **Processadores: `3`**
+
+6. **Verificação rápida dentro das VMs:**
 
    ```bash
    ip a
    ping -c2 <IP_USER1>   # de user 2 - Debian para user 1 - Debian
    ```
 <img width="1500" height="564" alt="image" src="https://github.com/user-attachments/assets/41fda5a8-7fe4-400c-98ac-8a995fc836cb" />
+
+7. **Resetar IP para DHCP da `NatNetwork` (caso a VM esteja com IP estático):**
+
+   Execute em **cada VM Debian**:
+
+   ```bash
+   IFACE=$(ip route | awk '/default/ {print $5; exit}')
+   sudo dhclient -r "$IFACE" || true
+   sudo ip addr flush dev "$IFACE"
+   sudo dhclient "$IFACE"
+   ip -4 a show "$IFACE"
+   ```
 
 ### A) user 1 - Debian (Servidor)
 
