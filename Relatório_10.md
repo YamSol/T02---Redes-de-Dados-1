@@ -58,6 +58,9 @@ Abra o Wireshark com `sudo wireshark` e selecione a **interface da NAT Network**
 
 ## IV. Instalação e Preparação
 
+> [!WARNING]
+> Substitua quaisquer ocorrências de "<IP_USER1>" pelo valor correto no decorrer do relatório.
+
 ### 0) **Preparar a rede (VirtualBox → Ferramentas → Redes NAT)**
 
 1. **Abrir o gerenciador de redes NAT:**
@@ -141,9 +144,11 @@ ss -tulpn | grep :80
 
 **Instalar cliente HTTP e Wireshark:**
 
+> Observação: escolha "Yes" na configuração do Wireshark
+
 ```bash
 sudo apt update && sudo apt install -y curl wireshark
-sudo dpkg-reconfigure wireshark-common   # escolha "Yes"
+sudo dpkg-reconfigure wireshark-common
 sudo usermod -aG wireshark $USER
 newgrp wireshark
 ```
@@ -204,8 +209,9 @@ ss -tulpn | grep :443
 
 **No user 2 - Debian:**
 
-4. Reiniciar captura no Wireshark.
-5. Executar teste HTTPS:
+4. No Wireshark, aplicar o filtro `tcp.stream eq 0` na barra de filtros.
+5. Selecionar **"Restart current capture"** (ícone verde ▶ no topo do Wireshark) para reiniciar a captura com o filtro já aplicado.
+6. Executar teste HTTPS:
 
 ```bash
 curl -vk https://<IP_USER1>
@@ -213,7 +219,7 @@ curl -vk https://<IP_USER1>
 
 > O `-k` é intencional no laboratório: ele permite seguir com certificado autoassinado.
 
-6. No Wireshark, usar filtro `tls` ou `tcp.port == 443`.
+7. No Wireshark, observar os pacotes capturados.
    **O que observar:** pacotes de **handshake TLS** (ClientHello/ServerHello/Certificado) e **payload cifrado**.
 
 ---
