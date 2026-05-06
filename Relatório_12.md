@@ -61,6 +61,7 @@ Aplicaremos **regras** (ex.: **bloquear HTTP**, **bloquear um site específico**
 
   * **Habilitar Placa de Rede**
   * **Conectado a:** **NAT**
+  * **Anotar o endereço MAC do adaptador** — os últimos 4 caracteres são suficientes para posterior configuração no pfSense.
   <img width="806" height="377" alt="image" src="https://github.com/user-attachments/assets/ed4886ae-aed5-4681-b021-6a73fbf13397" />
 
 * **Adaptador 2 (LAN):**
@@ -68,6 +69,7 @@ Aplicaremos **regras** (ex.: **bloquear HTTP**, **bloquear um site específico**
   * **Habilitar Placa de Rede**
   * **Conectado a:** **Internal Network**
   * **Nome:** **`LAN_PFS`**  ← **digite exatamente este nome** (se não existir, o VirtualBox cria ao salvar).
+  * **Anotar o endereço MAC do adaptador** — os últimos 4 caracteres são suficientes para posterior configuração no pfSense.
   <img width="800" height="375" alt="image" src="https://github.com/user-attachments/assets/ca317cf7-a5c4-4fff-b7b3-fd1f3e8ca574" />
 
 * **OK**.
