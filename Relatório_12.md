@@ -52,15 +52,16 @@ Aplicaremos **regras** (ex.: **bloquear HTTP**, **bloquear um site específico**
 
 ## IV. Instalação e Preparação
 
-### 0) **Preparar as redes (criando pelas Configurações da VM)**
+### 0) **Configurando pfSense**
 
-1. **pfSense — habilitar e configurar as duas interfaces**
+1. **pfSense — habilitar e configurar as duas interfaces no VirtualBox**
 
 * VirtualBox → **botão direito** na VM **pfSense** → **Configurações** → **Rede**.
 * **Adaptador 1 (WAN):**
 
   * **Habilitar Placa de Rede**
   * **Conectado a:** **NAT**
+  * **Anotar o endereço MAC do adaptador** — os últimos 4 caracteres são suficientes para posterior configuração no pfSense.
   <img width="806" height="377" alt="image" src="https://github.com/user-attachments/assets/ed4886ae-aed5-4681-b021-6a73fbf13397" />
 
 * **Adaptador 2 (LAN):**
@@ -68,6 +69,7 @@ Aplicaremos **regras** (ex.: **bloquear HTTP**, **bloquear um site específico**
   * **Habilitar Placa de Rede**
   * **Conectado a:** **Internal Network**
   * **Nome:** **`LAN_PFS`**  ← **digite exatamente este nome** (se não existir, o VirtualBox cria ao salvar).
+  * **Anotar o endereço MAC do adaptador** — os últimos 4 caracteres são suficientes para posterior configuração no pfSense.
   <img width="800" height="375" alt="image" src="https://github.com/user-attachments/assets/ca317cf7-a5c4-4fff-b7b3-fd1f3e8ca574" />
 
 * **OK**.
@@ -80,34 +82,94 @@ Aplicaremos **regras** (ex.: **bloquear HTTP**, **bloquear um site específico**
 
 * **OK**.
 
-3. **Inicialização e verificação rápida**
+3. **Ligar o pfSense**
 
-* Inicie **pfSense** e depois o **user 2 - Debian**.
-* No **user 2 - Debian**:
+* Inicie a VM **pfSense** no VirtualBox e aguarde o carregamento completo.
 
-  ```bash
-  ip a                 # deve obter IP na sub-rede da LAN (ex.: 192.168.1.x)
-  ping -c2 192.168.1.1 # (opcional) gateway do pfSense
-  ```
+#### A) Associar interfaces de rede
 
-4. **Se o `user 2 - Debian` estava com IP estático, resetar para DHCP da LAN do pfSense:**
+Na tela de boas-vindas do pfSense, é possível verificar que existem duas interfaces: **em0** e **em1**.
 
-   ```bash
-   IFACE=$(ip route | awk '/default/ {print $5; exit}')
-   sudo dhclient -r "$IFACE" || true
-   sudo ip addr flush dev "$IFACE"
-   sudo dhclient "$IFACE"
-   ip -4 a show "$IFACE"
-   ```
+<img width="800" alt="000 welcome com indicacao das duas interfaces existentes" src="https://github.com/user-attachments/assets/1417dec6-ddea-4bb7-b24f-99c60ae03e8a" />
 
-### A) user 2 - Debian
 
-Instale utilitários (se necessário):
+1. Digite **`1`** e pressione **Enter** para selecionar **"Assign Interfaces"**.
+2. Serão exibidas as interfaces disponíveis (**em0** e **em1**) com seus respectivos **endereços MAC**.
+3. Compare os endereços MAC exibidos com os anotados nas configurações do VirtualBox:
+
+   * Para **WAN**, selecione a interface cujo MAC corresponde ao adaptador do tipo **NAT**.
+   * Para **LAN**, selecione a interface cujo MAC corresponde ao adaptador **Internal Network** (`LAN_PFS`).
+
+4. Quando perguntado **"Do you want to proceed?"**, digite **`y`** e pressione **Enter**.
+
+<img width="800" alt="001 associacao de interfaces no pfsense" src="https://github.com/user-attachments/assets/a8dd0bcc-f28d-4292-a8a2-969345070ee7" />
+
+5. Aguarde a conclusão. Na tela de boas-vindas, a associação estará atualizada — no teste realizado: **em0 → WAN** e **em1 → LAN**.
+
+#### B) Definir endereço IP da interface WAN
+
+Como o adaptador WAN é do tipo **NAT**, o VirtualBox fornece endereço IP automaticamente via DHCP; portanto, a interface será configurada dessa forma.
+
+1. Digite **`2`** e pressione **Enter** para selecionar **"Set interface(s) IP addresses"**.
+2. Selecione o número correspondente à **WAN** (no teste realizado: **`1`**) e pressione **Enter**.
+3. **"Configure IPv4 address WAN interface via DHCP?"** → Digite **`y`** e pressione **Enter**.
+4. **"Configure IPv6 address WAN interface via DHCP6?"** → Digite **`n`** e pressione **Enter**.
+5. Pressione **Enter**.
+6. **"Do you want to revert to HTTP as the webConfigurator protocol?"** → Digite **`n`** e pressione **Enter**.
+
+<img width="800" alt="002 atribuindo DHCP para interface WAN" src="https://github.com/user-attachments/assets/47148e09-163d-4138-9e53-c1bfd7607010" />
+
+7. Quando solicitado, pressione **Enter** para retornar ao menu principal.
+
+Após a conclusão, na tela de boas-vindas a linha **WAN** deverá indicar **v4/DHCP** e um endereço IP condizente com a rede NAT do VirtualBox (ex.: `10.0.2.x`).
+
+#### C) Definir endereço estático da interface LAN e configurar DHCP da rede
+
+Como a **Rede Interna** não possui nenhum serviço DHCP por parte do VirtualBox, o pfSense será responsável por fornecer endereços IP às máquinas conectadas a essa rede.
+
+1. Digite **`2`** e pressione **Enter** para selecionar **"Set interface(s) IP addresses"**.
+2. Selecione o número correspondente à **LAN** (no teste realizado: **`2`**) e pressione **Enter**.
+3. **"Configure IPv4 address LAN interface via DHCP?"** → Digite **`n`** e pressione **Enter**.
+4. Digite o endereço IP **`192.168.1.1`** e pressione **Enter**.
+5. Digite a máscara de sub-rede **`24`** e pressione **Enter**.
+6. Pressione **Enter** (sem digitar nada) para o campo de upstream gateway.
+
+<img width="800" alt="003 atribuindo ip estático para interface LAN" src="https://github.com/user-attachments/assets/ee63ff00-d73b-44ee-a4f8-70c42eccbb8c" />
+
+7. **"Configure IPv6 address LAN interface via DHCP6?"** → Digite **`n`** e pressione **Enter**.
+8. Pressione **Enter** (sem digitar nada) para o campo de endereço IPv6.
+9. **"Do you want to enable the DHCP server on LAN?"** → Digite **`y`** e pressione **Enter**.
+10. **"Enter the start address of the IPv4 client address range:"** → Digite **`192.168.1.10`** e pressione **Enter**.
+11. **"Enter the end address of the IPv4 client address range:"** → Digite **`192.168.1.254`** e pressione **Enter**.
+
+<img width="800" alt="004 ativando servidor DHCP para interface LAN" src="https://github.com/user-attachments/assets/a87843d7-7493-49e1-9fd4-c617b98efccc" />
+
+12. **"Do you want to revert to HTTP as the webConfigurator protocol?"** → Digite **`n`** e pressione **Enter**.
+
+Quando solicitado que se pressione **Enter**, surgirá a mensagem **"You can access the webConfigurator by opening the following URL in your browser"**, confirmando que o IP foi corretamente configurado. O endereço estático da interface LAN (**`192.168.1.1`**) também será exibido — máquinas conectadas à Rede Interna já podem acessar o pfSense por esse endereço.
+
+#### D) user 2 - Debian — conectar à Rede Interna
+
+Inicie a VM **user 2 - Debian** e aguarde a obtenção de endereço IP via DHCP do pfSense.
+
+Instale utilitários (se necessário) e verifique a conectividade:
 
 ```bash
 sudo apt update && sudo apt install -y net-tools dnsutils curl
+ip a                 # deve obter IP na sub-rede da LAN (ex.: 192.168.1.x)
 ip route
+ping -c2 192.168.1.1 # gateway do pfSense
 ```
+
+* **Se o `user 2 - Debian` estava com IP estático, resetar para DHCP:**
+
+  ```bash
+  IFACE=$(ip route | awk '/default/ {print $5; exit}')
+  sudo dhclient -r "$IFACE" || true
+  sudo ip addr flush dev "$IFACE"
+  sudo dhclient "$IFACE"
+  ip -4 a show "$IFACE"
+  ```
 
 > **Acesso à WebGUI do pfSense (para criar regras e ver logs):** no navegador do user 2 - Debian, abra `https://192.168.1.1` (ou o IP LAN do pfSense) e aceite o certificado autoassinado.
 
