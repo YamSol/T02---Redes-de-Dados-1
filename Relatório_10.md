@@ -141,9 +141,11 @@ ss -tulpn | grep :80
 
 **Instalar cliente HTTP e Wireshark:**
 
+> Observação: escolha "Yes" na configuração do Wireshark
+
 ```bash
 sudo apt update && sudo apt install -y curl wireshark
-sudo dpkg-reconfigure wireshark-common   # escolha "Yes"
+sudo dpkg-reconfigure wireshark-common
 sudo usermod -aG wireshark $USER
 newgrp wireshark
 ```
