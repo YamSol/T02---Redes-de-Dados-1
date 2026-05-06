@@ -58,6 +58,9 @@ Abra o Wireshark com `sudo wireshark` e selecione a **interface da NAT Network**
 
 ## IV. Instalação e Preparação
 
+> [!WARNING]
+> Substitua quaisquer ocorrências de "<IP_USER1>" pelo valor correto no decorrer do relatório.
+
 ### 0) **Preparar a rede (VirtualBox → Ferramentas → Redes NAT)**
 
 1. **Abrir o gerenciador de redes NAT:**
