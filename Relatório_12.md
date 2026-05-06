@@ -90,7 +90,8 @@ Aplicaremos **regras** (ex.: **bloquear HTTP**, **bloquear um site específico**
 
 Na tela de boas-vindas do pfSense, é possível verificar que existem duas interfaces: **em0** e **em1**.
 
-<!-- PRINT: tela de boas-vindas do pfSense exibindo as interfaces em0 e em1 disponíveis -->
+<img width="800" alt="000 welcome com indicacao das duas interfaces existentes" src="https://github.com/user-attachments/assets/1417dec6-ddea-4bb7-b24f-99c60ae03e8a" />
+
 
 1. Digite **`1`** e pressione **Enter** para selecionar **"Assign Interfaces"**.
 2. Serão exibidas as interfaces disponíveis (**em0** e **em1**) com seus respectivos **endereços MAC**.
@@ -101,7 +102,7 @@ Na tela de boas-vindas do pfSense, é possível verificar que existem duas inter
 
 4. Quando perguntado **"Do you want to proceed?"**, digite **`y`** e pressione **Enter**.
 
-<!-- PRINT: terminal do pfSense exibindo os processos de atribuição das interfaces (confirmação dos passos 1–4 acima) -->
+<img width="800" alt="001 associacao de interfaces no pfsense" src="https://github.com/user-attachments/assets/a8dd0bcc-f28d-4292-a8a2-969345070ee7" />
 
 5. Aguarde a conclusão. Na tela de boas-vindas, a associação estará atualizada — no teste realizado: **em0 → WAN** e **em1 → LAN**.
 
@@ -116,7 +117,7 @@ Como o adaptador WAN é do tipo **NAT**, o VirtualBox fornece endereço IP autom
 5. Pressione **Enter**.
 6. **"Do you want to revert to HTTP as the webConfigurator protocol?"** → Digite **`n`** e pressione **Enter**.
 
-<!-- PRINT: terminal do pfSense exibindo os processos de configuração da WAN (passos 1–6 acima) -->
+<img width="800" alt="002 atribuindo DHCP para interface WAN" src="https://github.com/user-attachments/assets/47148e09-163d-4138-9e53-c1bfd7607010" />
 
 7. Quando solicitado, pressione **Enter** para retornar ao menu principal.
 
@@ -133,7 +134,7 @@ Como a **Rede Interna** não possui nenhum serviço DHCP por parte do VirtualBox
 5. Digite a máscara de sub-rede **`24`** e pressione **Enter**.
 6. Pressione **Enter** (sem digitar nada) para o campo de upstream gateway.
 
-<!-- PRINT: terminal do pfSense exibindo a configuração de IP e máscara da LAN (passos 1–6 acima) -->
+<img width="800" alt="003 atribuindo ip estático para interface LAN" src="https://github.com/user-attachments/assets/ee63ff00-d73b-44ee-a4f8-70c42eccbb8c" />
 
 7. **"Configure IPv6 address LAN interface via DHCP6?"** → Digite **`n`** e pressione **Enter**.
 8. Pressione **Enter** (sem digitar nada) para o campo de endereço IPv6.
@@ -141,7 +142,7 @@ Como a **Rede Interna** não possui nenhum serviço DHCP por parte do VirtualBox
 10. **"Enter the start address of the IPv4 client address range:"** → Digite **`192.168.1.10`** e pressione **Enter**.
 11. **"Enter the end address of the IPv4 client address range:"** → Digite **`192.168.1.254`** e pressione **Enter**.
 
-<!-- PRINT: terminal do pfSense exibindo a configuração do DHCP da LAN (passos 7–11 acima) -->
+<img width="800" alt="004 ativando servidor DHCP para interface LAN" src="https://github.com/user-attachments/assets/a87843d7-7493-49e1-9fd4-c617b98efccc" />
 
 12. **"Do you want to revert to HTTP as the webConfigurator protocol?"** → Digite **`n`** e pressione **Enter**.
 
