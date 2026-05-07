@@ -12,6 +12,8 @@ Este relatório tem como objetivo **montar um laboratório em NAT Network (rede 
 
 Nesta atividade, você configurará duas VMs (**user 1 - Debian** e **user 2 - Debian**) em uma **NAT Network** do VirtualBox para observar, via Wireshark no **user 2 - Debian**, como o TLS protege o conteúdo das mensagens HTTP. Em texto claro, o payload é legível; com TLS, apenas metadados e o **handshake** ficam visíveis.
 
+No contexto de segurança em redes, o TLS cria um canal cifrado sobre TCP por meio do *handshake*, com negociação de chaves de sessão temporárias para proteger o tráfego de aplicação. Na prática, isso reduz a exposição a interceptação e leitura de conteúdo por terceiros no caminho.
+
 **Pilares abordados:** foco em **Confidencialidade** (com menção a Autenticidade/Integridade via certificados e MAC do TLS).
 
 ---
@@ -42,7 +44,7 @@ Nesta atividade, você configurará duas VMs (**user 1 - Debian** e **user 2 - D
 
 ### 1) IPs via DHCP (sem endereçamento manual)
 
-Com **NAT Network (NatNetwork)**, os IPs são atribuídos automaticamente por **DHCP**. Use o **`ip a`** para identificar o IP atual do **user 1 - Debian** e do **user 2 - Debian**. Anote o IP do servidor como **<IP_USER1>** e utilize-o em todos os testes.
+Com **NAT Network (NatNetwork)**, os IPs são atribuídos automaticamente por **DHCP**. Use o **`ip a`** para identificar o IP atual do **user 1 - Debian** e do **user 2 - Debian**. Anote o IP do servidor como **`<IP_USER1>`** e utilize-o em todos os testes.
 
 ### 2) No user 2 - Debian — captura (Wireshark)
 
@@ -59,7 +61,7 @@ Abra o Wireshark com `sudo wireshark` e selecione a **interface da NAT Network**
 ## IV. Instalação e Preparação
 
 > [!WARNING]
-> Substitua quaisquer ocorrências de "<IP_USER1>" pelo valor correto no decorrer do relatório.
+> Substitua quaisquer ocorrências de `"<IP_USER1>"` pelo valor correto no decorrer do relatório.
 
 ### 0) **Preparar a rede (VirtualBox → Ferramentas → Redes NAT)**
 
@@ -90,7 +92,7 @@ Abra o Wireshark com `sudo wireshark` e selecione a **interface da NAT Network**
 
    * Para **user 1 - Debian** e **user 2 - Debian** → **Configurações** (*Settings*) → **Rede** (*Network*)
    * **Adaptador 1** (*Adapter 1*) → **Conectado a:** *NAT Network* → **Nome:** `NatNetwork`
-   * OK e **iniciar** as VMs
+   * OK
   
 <img width="808" height="345" alt="image" src="https://github.com/user-attachments/assets/3a4a1d8a-63b4-4c48-b06a-d65de72964a2" />
 
@@ -98,6 +100,7 @@ Abra o Wireshark com `sudo wireshark` e selecione a **interface da NAT Network**
 
    * VirtualBox → **Configurações** → **Sistema** → **Placa-mãe** → **Memória Base: `6144 MB` (6 GB)**
    * VirtualBox → **Configurações** → **Sistema** → **Processador** → **Processadores: `3`**
+   * Após ajustar os recursos, **iniciar** as VMs
 
 6. **Verificação rápida dentro das VMs:**
 
@@ -209,9 +212,9 @@ ss -tulpn | grep :443
 
 **No user 2 - Debian:**
 
-4. No Wireshark, aplicar o filtro `tcp.stream eq 0` na barra de filtros.
-5. Selecionar **"Restart current capture"** (ícone verde ▶ no topo do Wireshark) para reiniciar a captura com o filtro já aplicado.
-6. Executar teste HTTPS:
+4. No Wireshark, aplique o filtro `tcp.stream eq 0` na barra de filtros.
+5. Selecione **"Restart current capture"** (ícone verde ▶ no topo do Wireshark) para reiniciar a captura com o filtro já aplicado.
+6. Execute o teste HTTPS:
 
 ```bash
 curl -vk https://<IP_USER1>
@@ -219,7 +222,7 @@ curl -vk https://<IP_USER1>
 
 > O `-k` é intencional no laboratório: ele permite seguir com certificado autoassinado.
 
-7. No Wireshark, observar os pacotes capturados.
+7. No Wireshark, observe os pacotes capturados.
    **O que observar:** pacotes de **handshake TLS** (ClientHello/ServerHello/Certificado) e **payload cifrado**.
 
 ---
