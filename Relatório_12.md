@@ -191,7 +191,7 @@ ping -c2 192.168.1.1 # gateway do pfSense
 * **Protocol:** *TCP*
 * **Source:** *LAN net* (subnets)
 * **Destination:** *any*
-* **Destination Port Range:** *HTTP (80)*
+* **Destination Port Range:** `HTTP (80)`
 * **Description:** `BLOCK_LAN_HTTP_OUT`
 * **Save** → **Apply Changes**
 
