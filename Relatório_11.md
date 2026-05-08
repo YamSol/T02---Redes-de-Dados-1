@@ -114,6 +114,8 @@ sudo suricata -T -S /etc/suricata/rules/local.rules -v
 # esperado: "4 rules successfully loaded, 0 failed"
 ```
 
+<img width="1237" height="535" alt="image" src="https://github.com/user-attachments/assets/6af89f35-15a0-470d-a964-1f63724d2e8a" />
+
 ### D) Iniciar o Suricata (modo IDS) — **manual, sem `--set`**
 
 > Em Debian, usar `--set outputs.*` pode causar erro de “child node (null)”. Usaremos o YAML padrão.
@@ -145,6 +147,7 @@ Abra dois terminais:
 
 **Terminal A:** `tail -f /var/log/suricata/fast.log`
 
+<img width="611" height="91" alt="image" src="https://github.com/user-attachments/assets/f7e2bad4-8a20-4919-979f-dd084d40962b" />
 
 **Terminal B (caso optar por testar usando `curl` diretamente no terminal):** comandos de disparo (abaixo). Dica: force IPv4 com `-4`.
 
@@ -160,6 +163,8 @@ curl -4 -s 'http://neverssl.com/SURICATA_BROWSER_URI_01' >/dev/null
 ```
 
 * Caso demore para executar ou alertar, aguarde. Este comportamento é esperado.
+
+<img width="1785" height="207" alt="image" src="https://github.com/user-attachments/assets/75343aec-013b-4504-be75-92acb3f86fa6" />
 
 **O que observar no log:** uma linha no `fast.log` com a mensagem
 `CUSTOM BROWSER - HTTP URI trigger` (SID 1002001), indicando tráfego `{TCP} <IP_VM>:<porta> -> <IP_destino>:80`.
@@ -178,6 +183,8 @@ curl -4 -s -X POST -d 'SURICATA_BROWSER_BODY_02' 'http://neverssl.com/' >/dev/nu
 ```
 
 * Caso demore para executar ou alertar, aguarde. Este comportamento é esperado.
+
+<img width="1785" height="218" alt="image" src="https://github.com/user-attachments/assets/24087409-8c8b-4a65-b4f8-8fe91cf8ccb7" />
 
 **O que observar no log:** a mensagem
 `CUSTOM BROWSER - HTTP client body trigger` (SID 1002002).
@@ -198,6 +205,8 @@ curl -4 -s -H 'X-Trigger-Lab: 1' 'http://neverssl.com/' >/dev/null
 
 * Caso demore para executar ou alertar, aguarde. Este comportamento é esperado.
 
+<img width="1782" height="256" alt="image" src="https://github.com/user-attachments/assets/6f87fb49-cc08-4880-9b18-6cc2c3657e72" />
+
 **O que observar no log:** a mensagem
 `CUSTOM BROWSER - HTTP header X-Trigger-Lab` (SID 1002003), com fluxo `{TCP} <IP_VM>:<porta> -> <IP_destino>:80`.
 
@@ -215,6 +224,8 @@ dig +short suricata-trigger-lab.example >/dev/null
 ```
 
 * Caso demore para executar ou alertar, aguarde. Este comportamento é esperado.
+
+<img width="1777" height="287" alt="image" src="https://github.com/user-attachments/assets/5cb962e1-b239-4938-ac74-6255a2d782f4" />
 
 **O que observar no log:** a mensagem
 `CUSTOM BROWSER - DNS query trigger` (SID 1002004), com fluxo `{UDP} <IP_VM>:<porta> -> <DNS_resolvedor>:53`.
