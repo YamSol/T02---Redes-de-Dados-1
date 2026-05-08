@@ -307,8 +307,8 @@ ping -c2 192.168.1.1
 
 #### **Validação 2 (Página Logs):**
 1. Abra a página **Status > System Logs > Firewall**
-2. Selecione os filtros para interface (`LAN`).
-3. Verifique entradas **blocked** cujo **Destination** é um dos IPs resolvidos para `www.wikipedia.org`.
+2. Selecione os filtros para interface (`LAN`) e Destination Address (`8.8.8.8`).
+4. Verifique entradas **blocked** cujo **Destination Addres** pertencem ao IP bloqueado.
 <!--IMAGEM6-->
 
 3. **Logs:** ver **blocks** ICMP na saída.
