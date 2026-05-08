@@ -314,33 +314,7 @@ ping -c2 192.168.1.1
 
 ---
 
-## VI. Verificação e Resultados
-
-### 1) Quadro comparativo (cenários)
-
-| Cenário | Tráfego                                                    | Regra aplicada            | Resultado esperado | Validação (Debian)                                                           |
-| :-----: | ---------------------------------------------------------- | ------------------------- | ------------------ | ----------------------------------------------------------------------------- |
-|    1    | HTTP 80 (saída, geral)                                     | `BLOCK_LAN_HTTP_OUT`      | **Bloqueado**      | Navegador: **[http://neverssl.com](http://neverssl.com)** (falha)             |
-|    1    | HTTPS 443 (saída, geral)                                   | Allow padrão              | **Permitido**      | Navegador: **[https://example.com](https://example.com)** (ok)                |
-|    2    | HTTPS p/ **[www.wikipedia.org](https://www.wikipedia.org)** | `BLOCK_SITE_WIKIPEDIA`    | **Bloqueado**      | Navegador: **[https://www.wikipedia.org](https://www.wikipedia.org)** (falha) |
-|    2    | HTTPS p/ outros destinos                                   | Allow padrão              | **Permitido**      | Navegador: **[https://example.com](https://example.com)** (ok)                |
-|    3    | ICMP Internet                                              | `BLOCK_LAN_ICMP_INTERNET` | **Bloqueado**      | `ping 8.8.8.8` (falha)                                                        |
-|    3    | ICMP → gateway da LAN                                      | `ALLOW_ICMP_TO_GATEWAY`   | **Permitido**      | `ping 192.168.1.1` (ok)                                                       |
-
-### 2) Onde analisar
-
-* **pfSense → Status > System Logs > Firewall** (filtro **Interface = LAN**).
-* Correlacione **timestamp** dos testes com registros **pass/block**.
-
-### 3) Critérios de sucesso do experimento (guia)
-
-* **Cenário 1:** HTTP (80) bloqueado e HTTPS permitido a partir do Debian.
-* **Cenário 2:** `www.wikipedia.org` bloqueado via alias, com outros sites liberados.
-* **Cenário 3:** ICMP para Internet bloqueado e ICMP para gateway permitido (quando a exceção for aplicada acima da regra de bloqueio).
-
----
-
-## VII. Conclusão
+## VI. Conclusão
 
 Demonstrou-se, com **duas VMs** (pfSense e Debian), que o **pfSense** aplica **políticas de saída** eficazes (HTTP geral, **site específico**, ICMP), atuando como **gateway/NAT** e **firewall stateful**. Testes no **navegador** e com **ping** confirmaram os resultados, e os **logs** evidenciaram os eventos, reforçando a importância da **ordem das regras** e do **monitoramento**.
 
