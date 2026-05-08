@@ -269,10 +269,8 @@ Em "Host(s)":
 1. Abra a página **Status > System Logs > Firewall**
 2. Selecione os filtros para interface (`LAN`).
 3. Verifique entradas **blocked** cujo **Destination** é um dos IPs resolvidos para `www.wikipedia.org`.
-<!--IMAGEM4-->
+   <img width="800"  alt="004 cenario 2 block wiki" src="https://github.com/user-attachments/assets/877268a9-d1a6-4ca5-b764-81563bcbff0f" />
 
-1. Abra a página **Status > System Logs > Firewall**
-2. filtre por **Interface = LAN** e verifique entradas **blocked** 
 
 > **Dica:** se o site ainda abrir, abra em uma nova guia. Também é possível limpar o cache e recarregar a página.
 
@@ -303,13 +301,14 @@ Em "Host(s)":
 ping -c2 8.8.8.8
 ping -c2 192.168.1.1
 ```
-<!--IMAGEM5-->
+<img width="800" alt="005 cenario 3 validacao 1" src="https://github.com/user-attachments/assets/f46059ea-90a7-4867-b7da-bdffbb36cb54" />
 
 #### **Validação 2 (Página Logs):**
 1. Abra a página **Status > System Logs > Firewall**
 2. Selecione os filtros para interface (`LAN`) e Destination Address (`8.8.8.8`).
 4. Verifique entradas **blocked** cujo **Destination Addres** pertencem ao IP bloqueado.
-<!--IMAGEM6-->
+   <img width="800" alt="006 cenario 3 validacao 2" src="https://github.com/user-attachments/assets/2df7f385-9cf2-45a4-a132-6c8298b0d82c" />
+
 
 3. **Logs:** ver **blocks** ICMP na saída.
 
