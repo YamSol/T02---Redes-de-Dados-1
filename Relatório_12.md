@@ -202,7 +202,7 @@ ping -c2 192.168.1.1 # gateway do pfSense
    * **Source:** *LAN subnets*
    * **Destination:** *any*
    * **Destination Port Range:** `HTTP (80)`
-   * Log: (marcar opção)
+   * **Log:** (marcar opção)
    * **Description:** `BLOCK_LAN_HTTP_OUT`
    * **Save** → **Apply Changes**
 #### Validação 1 (terminal Debian):
@@ -235,10 +235,11 @@ Aqui iremos validar o bloqueio realizado por meio da interface web do pfSense:
 > *Obs. 2: a atualização do alias por FQDN pode levar alguns minutos; em sala, aguarde um curto intervalo antes de repetir o teste.*
 
 1. **Criar o Alias (pfSense WebGUI) — Firewall > Aliases > Add**
-
+Em "Properties":
 * **Name:** `BLOCK_WIKI`
 * **Type:** *Host(s)*
-* **Host(s):** `www.wikipedia.org`
+Em "Host(s)":
+* **IP or FQDN:** `www.wikipedia.org`
 * **Description:** `FQDN do site a bloquear`
 * **Save** → **Apply Changes**
 
@@ -248,23 +249,35 @@ Aqui iremos validar o bloqueio realizado por meio da interface web do pfSense:
 * **Interface:** *LAN*
 * **Address Family:** *IPv4*
 * **Protocol:** *TCP*
-* **Source:** *LAN net* (subnets)
-* **Destination:** **`BLOCK_WIKI`** (o alias criado)
+* **Source:** *LAN subnets*
+* **Destination:** (Address or Alias), e o alias criado: **`BLOCK_WIKI`**
 * **Destination Port Range:** *any*
 * **Description:** `BLOCK_SITE_WIKIPEDIA`
+* **Log:** (marcar opção)
 * **Save** → **Apply Changes**
 
 > [!IMPORTANT]  
 > Mantenha esta regra **acima** da regra “allow LAN to any”.
 
-3. **Teste (Debian) — navegador**
+#### **Validação 1 (Debian, navegador):**
 
-* Abra **[https://www.wikipedia.org](https://www.wikipedia.org)** → **deve FALHAR** (bloqueado).
-* Abra **[https://example.com](https://example.com)** → **deve abrir normalmente** (não bloqueado).
+1. Abra **[https://www.wikipedia.org](https://www.wikipedia.org)** → **deve FALHAR** (bloqueado).
 
-4. **Logs (pfSense):** **Status > System Logs > Firewall**, filtre por **Interface = LAN** e verifique entradas **blocked** cujo **Destination** é um dos IPs resolvidos para `www.wikipedia.org`.
+2. Abra **[https://example.com](https://example.com)** → **deve abrir normalmente** (não bloqueado).
 
-> **Dica:** se o site ainda abrir, limpe cache DNS do cliente e aguarde a atualização do alias (o pfSense **resolve periodicamente** os FQDNs). Também confira a **ordem** da regra na aba **LAN**.
+#### **Validação 2 (Página Logs):**
+1. Abra a página **Status > System Logs > Firewall**
+2. Selecione os filtros para interface (`LAN`).
+3. Verifique entradas **blocked** cujo **Destination** é um dos IPs resolvidos para `www.wikipedia.org`.
+<!--IMAGEM4-->
+
+1. Abra a página **Status > System Logs > Firewall**
+2. filtre por **Interface = LAN** e verifique entradas **blocked** 
+
+> **Dica:** se o site ainda abrir, abra em uma nova guia. Também é possível limpar o cache e recarregar a página.
+
+> [!IMPORTANT]  
+> Confira a **ordem** da regra na aba **LAN**.
 
 ---
 
@@ -272,33 +285,33 @@ Aqui iremos validar o bloqueio realizado por meio da interface web do pfSense:
 
 **Objetivo:** impedir `ping` para Internet (ex.: 8.8.8.8), mantendo o diagnóstico interno para o gateway.
 
-1. **pfSense → Firewall > Rules > LAN → Add (acima do allow):**
+1. Abra a página **pfSense → Firewall > Rules > LAN → Add (seta para cima):**
+2. Configure a nova regra de acordo:
+   * **Action:** *Block*
+   * **Protocol:** *ICMP*
+   * **ICMP subtypes:** *any*
+   * **Source:** *LAN subnets*
+   * **Destination:** *WAN subnets*
+   * **Log:** (marcar opção)
+   * **Description:** `BLOCK_LAN_ICMP_INTERNET`
+   * **Save** -> **Apply Changes**
 
-* **Action:** *Block*
-* **Protocol:** *ICMP*
-* **ICMP subtypes:** *any*
-* **Source:** *LAN net*
-* **Destination:** *any*
-* **Description:** `BLOCK_LAN_ICMP_INTERNET`
-* **Save**
+#### **Validação 1 (Debian, terminal):**
 
-2. **Adicionar exceção para o gateway (opcional, acima do block):**
-
-* **Action:** *Pass*
-* **Protocol:** *ICMP*
-* **Source:** *LAN net*
-* **Destination:** *Address or alias* → **192.168.1.1**
-* **Description:** `ALLOW_ICMP_TO_GATEWAY`
-* **Save** → **Apply Changes**
-
-3. **Teste (Debian):**
-
+1. Acesse o terminal do Debian e digite ambos comandos abaixo. O primeiro deverá falhar, por tentar acessar um IP externo. Já o segundo, deverá ter sucesso, acessando o IP local (do próprio Gateway).
 ```bash
-ping -c 2 8.8.8.8          # deve FALHAR
-ping -c 2 192.168.1.1     # deve OK
+ping -c2 8.8.8.8
+ping -c2 192.168.1.1
 ```
+<!--IMAGEM5-->
 
-4. **Logs:** ver **blocks** ICMP na saída.
+#### **Validação 2 (Página Logs):**
+1. Abra a página **Status > System Logs > Firewall**
+2. Selecione os filtros para interface (`LAN`).
+3. Verifique entradas **blocked** cujo **Destination** é um dos IPs resolvidos para `www.wikipedia.org`.
+<!--IMAGEM6-->
+
+3. **Logs:** ver **blocks** ICMP na saída.
 
 ---
 
