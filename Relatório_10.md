@@ -233,8 +233,13 @@ curl -vk https://<IP_USER1>
 
 > O `-k` é intencional no laboratório: ele permite seguir com certificado autoassinado.
 
-7. No Wireshark, observe os pacotes capturados.
+<img width="766" height="875" alt="image" src="https://github.com/user-attachments/assets/b612937e-31f3-40ec-9cfc-715101247637" />
+
+7. No Wireshark, observe os pacotes capturados: usar filtro `tls && ip.addr == <IP_USER2>`.
    **O que observar:** pacotes de **handshake TLS** (ClientHello/ServerHello/Certificado) e **payload cifrado**.
+
+<img width="1086" height="420" alt="image" src="https://github.com/user-attachments/assets/033753e3-daae-4dfd-966a-ce779528bdf9" />
+<img width="1188" height="701" alt="image" src="https://github.com/user-attachments/assets/304bdb65-de32-46b1-a97e-19e5b85d3833" />
 
 ---
 
