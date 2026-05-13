@@ -1,7 +1,11 @@
-﻿# T02 – Redes de Dados I
+<img width="180" alt="image" src="https://github.com/user-attachments/assets/cf68b22b-ecb8-4e9e-8f09-271ef1bc1246" />
+
+<div align="right">
+T02 - Redes de Dados
+</div>
 
 # Relatório 11: Configuração de **IDS** de Rede usando **Suricata no Debian** (VM no VirtualBox)
-
+ 
 Este relatório descreve a configuração de um **IDS** com **Suricata** **diretamente no Debian (uma única VM)**, monitorando o tráfego da própria VM para a **Internet**. Usaremos **apenas regras locais (Custom Rules)**, sem baixar rulesets externos. O objetivo é **instalar**, **iniciar** o Suricata em **modo IDS**, **gerar tráfego didático** (via navegador/`curl`) e **analisar os alertas** no `fast.log`/`eve.json`.
 
 * **Material de apoio:** `https://github.com/vin1sss/T02---Redes-de-Dados-1/`
