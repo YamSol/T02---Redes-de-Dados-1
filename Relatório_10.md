@@ -102,7 +102,7 @@ O TLS cria um canal cifrado sobre TCP por meio do *handshake*, com negociação 
    * VirtualBox → **Configurações** → **Sistema** → **Processador** → **Processadores: `3`**
    * Após ajustar os recursos, **iniciar** as VMs
 
-<img width="450" height="122" alt="image" src="https://github.com/user-attachments/assets/68e06263-2b2e-4d54-bbd1-a9ece015e47f" />
+<img width="466" height="122" alt="image" src="https://github.com/user-attachments/assets/4e1de125-9012-4b75-b395-e3aa73a179a8" />
 
 > **Ao final desta etapa:** as duas VMs devem estar ligadas, vinculadas à `NatNetwork` e prontas para receber IP via DHCP.
 
@@ -118,6 +118,8 @@ O TLS cria um canal cifrado sobre TCP por meio do *handshake*, com negociação 
 
    * Exemplo: se a `NatNetwork` estiver em `10.0.2.0/24`, os dois IPs devem seguir o padrão `10.0.2.x/24`.
    * Anote o IP do servidor como **`<IP_USER1>`** e o IP do cliente como **`<IP_USER2>`**.
+
+  <img width="1481" height="445" alt="image" src="https://github.com/user-attachments/assets/70c2e67a-184a-487b-a232-36a1759252e1" />
 
    > **Anote antes de seguir:** todos os comandos posteriores usam esses dois valores. Se necessário, mantenha os IPs anotados em separado durante a execução do laboratório.
 
@@ -151,6 +153,8 @@ O TLS cria um canal cifrado sobre TCP por meio do *handshake*, com negociação 
    ping -c2 <IP_USER2>
    ```
 
+   <img width="1481" height="370" alt="image" src="https://github.com/user-attachments/assets/e537c6a0-607b-4553-abec-e13e0b7375ad" />
+
 > **Ao final desta etapa:** as duas VMs devem estar na mesma rede e responder ao `ping` entre si.
 
 ### 3) Preparar o servidor — user 1 - Debian
@@ -161,12 +165,16 @@ O TLS cria um canal cifrado sobre TCP por meio do *handshake*, com negociação 
 sudo apt update && sudo apt install -y apache2 openssl
 ```
 
+<img width="695" height="323" alt="image" src="https://github.com/user-attachments/assets/1592bc42-1a35-46b9-8e64-ac8779790f87" />
+
 #### B) Criar página de teste com conteúdo identificável
 
 ```bash
 sudo mkdir -p /var/www/html
 echo "<h1>HELLO_TLS_HTTP</h1>" | sudo tee /var/www/html/index.html
 ```
+
+<img width="628" height="96" alt="image" src="https://github.com/user-attachments/assets/1d5ca830-2b83-4197-9bb3-a7fd1f6852c1" />
 
 #### C) Ativar o Apache e verificar a porta HTTP
 
@@ -177,7 +185,7 @@ ss -tulpn | grep :80
 
 > **Resultado esperado:** deve aparecer uma linha indicando que o Apache está em estado **LISTEN** na porta **80**.
 
-<img width="727" height="217" alt="image" src="https://github.com/user-attachments/assets/0dd44543-8a01-45fb-8107-b177869e9a73" />
+<img width="723" height="153" alt="image" src="https://github.com/user-attachments/assets/2c5dc094-4ede-4deb-90fd-0c3007cca55d" />
 
 > **Ao final desta etapa:** o servidor deve estar respondendo em **HTTP** na porta **80**.
 
@@ -192,15 +200,17 @@ sudo apt update
 sudo apt install -y curl wireshark
 ```
 
+<img width="596" height="177" alt="image" src="https://github.com/user-attachments/assets/92dbd981-4482-47f4-a52c-a111d0a10500" />
+
 #### B) Abrir o Wireshark e identificar a interface de captura
 
 ```bash
 sudo wireshark
 ```
 
-Esse comando **apenas abre o programa**. Na tela inicial, identifique a **interface da NAT Network** (a que mostra o IP do **user 2 - Debian**) e deixe o Wireshark pronto para iniciar a captura no próximo passo.
+Esse comando **apenas abre o programa**. Na tela inicial, identifique a **interface da NAT Network** (a que mostra o IP do **user 2 - Debian**, costuma ser **enp0s3**) e deixe o Wireshark pronto para iniciar a captura no próximo passo.
 
-Para confirmar que escolheu a interface correta, compare o IPv4 exibido no Wireshark com o endereço visto anteriormente no `ip a` do **user 2 - Debian**.
+<img width="921" height="501" alt="image" src="https://github.com/user-attachments/assets/9e375ed7-f018-4bb6-9ffd-9ccbb67e950a" />
 
 Durante a análise dos pacotes, use como referência o filtro:
 
@@ -223,13 +233,19 @@ Antes de iniciar os cenários, confirme:
 * o IP do servidor está anotado como **`<IP_USER1>`**;
 * o Apache responde em **HTTP** na porta **80**;
 * o Wireshark está aberto no **user 2 - Debian**;
-* a interface da **NAT Network** já foi identificada.
+* a interface da **NAT Network** já foi identificada (costuma ser **enp0s3**).
 
 ### Cenário 1 — HTTP **sem TLS** (porta 80)
 
 #### A) Preparar a captura
 
 1. **No user 2 - Debian:** com o Wireshark já aberto, **inicie a captura** na interface da **NAT Network** identificada anteriormente.
+
+<img width="366" height="292" alt="image" src="https://github.com/user-attachments/assets/480f3519-fe3c-4dfd-8cec-329fc63a8c0d" />
+
+<img width="777" height="213" alt="image" src="https://github.com/user-attachments/assets/e8be4387-047f-4705-a085-4eafb714164f" />
+
+> **Observação:** o quadrado vermelho indica que a captura está ativa.
 
 #### B) Executar o teste HTTP
 
@@ -246,6 +262,9 @@ curl -v http://<IP_USER1>
 #### C) Observar no Wireshark
 
 1. **Pause a captura** no Wireshark.
+
+<img width="138" height="92" alt="image" src="https://github.com/user-attachments/assets/cfedfeba-6545-4297-aa1b-530b14688ed8" />
+
 2. Aplique o filtro:
 
    ```text
@@ -271,6 +290,10 @@ sudo a2ensite default-ssl
 sudo systemctl reload apache2
 ```
 
+<img width="412" height="277" alt="image" src="https://github.com/user-attachments/assets/46ea3fc5-5434-44a8-8773-2cb63ed55ee3" />
+
+> **Observação:** caso apareça um erro relacionado ao Apache, ignore - ele apenas indica que o Apache não estava rodando anteriormente.
+
 2. **Gerar certificado autoassinado (1 ano):**
 
 ```bash
@@ -279,6 +302,8 @@ sudo openssl req -x509 -nodes -days 365 -newkey rsa:2048 \
   -out /etc/ssl/certs/apache.crt \
   -subj "/C=BR/ST=MG/L=Inatel/O=Lab/OU=NetSec/CN=<IP_USER1>"
 ```
+
+<img width="932" height="587" alt="image" src="https://github.com/user-attachments/assets/fa045612-e0ef-4120-9123-b8f47b2144ff" />
 
 3. **Apontar o vhost SSL para o certificado/chave e reiniciar Apache:**
 
@@ -291,12 +316,19 @@ ss -tulpn | grep :443
 
 > **Resultado esperado:** deve aparecer uma linha indicando que o Apache está em estado **LISTEN** na porta **443**.
 
+<img width="930" height="171" alt="image" src="https://github.com/user-attachments/assets/baaaf721-a9ce-4249-8f87-748c2494a942" />
+
 > **Ao final desta etapa:** o Apache deve estar escutando em **HTTPS** na porta **443**.
 
 #### B) Reiniciar a captura e executar o teste HTTPS — user 2 - Debian
 
 1. No Wireshark, **reinicie a captura** na interface da **NAT Network** para registrar somente o tráfego do novo teste.
-2. Execute:
+
+<img width="786" height="497" alt="image" src="https://github.com/user-attachments/assets/069ce333-c2a3-46b4-8ada-6343845d21f3" />
+
+<img width="777" height="213" alt="image" src="https://github.com/user-attachments/assets/e8be4387-047f-4705-a085-4eafb714164f" />
+
+3. Execute:
 
 ```bash
 curl -vk https://<IP_USER1>
@@ -309,7 +341,10 @@ curl -vk https://<IP_USER1>
 
 #### C) Observar no Wireshark
 
-1. **Pare a captura** no Wireshark.
+1. **Pause a captura** no Wireshark.
+
+<img width="138" height="92" alt="image" src="https://github.com/user-attachments/assets/cfedfeba-6545-4297-aa1b-530b14688ed8" />
+
 2. Remova o filtro anterior (se houver).
 3. Aplique o filtro:
 
