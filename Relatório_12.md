@@ -1,4 +1,8 @@
-# T02 – Redes de Dados I
+<img width="180" alt="image" src="https://github.com/user-attachments/assets/cf68b22b-ecb8-4e9e-8f09-271ef1bc1246" />
+
+<div align="right">
+T02 - Redes de Dados
+</div>
 
 # Relatório 12: Configuração de Firewall de Rede usando **pfSense** (VMs no VirtualBox)
 
