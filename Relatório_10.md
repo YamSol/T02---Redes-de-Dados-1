@@ -1,7 +1,11 @@
-﻿# T02 – Redes de Dados I
+<img width="180" alt="image" src="https://github.com/user-attachments/assets/cf68b22b-ecb8-4e9e-8f09-271ef1bc1246" />
+
+<div align="right">
+T02 - Redes de Dados
+</div>
 
 # Relatório 10: TLS em HTTP com Wireshark (VMs no VirtualBox)
-
+ 
 Este relatório tem como objetivo **montar um laboratório em NAT Network (rede NAT do VirtualBox)** para demonstrar o uso de **TLS** no protocolo **HTTP**, comparando o tráfego em texto claro (**HTTP sem TLS**) e criptografado (**HTTPS com TLS**) e **analisando as diferenças no Wireshark**.
 
 * **Material de apoio:** `https://github.com/vin1sss/T02---Redes-de-Dados-1/`
