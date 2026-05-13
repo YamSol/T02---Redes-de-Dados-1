@@ -62,6 +62,8 @@ Um IDS de rede opera de forma passiva: observa os pacotes, aplica assinaturas/re
 
 | Item | Uso |
 | --- | --- |
+| Senha das máquinas virtuais | **`pytest`** |
+| Senha solicitada pelo `sudo` | **`pytest`** |
 | Interface de saída da VM | Confirmada com `ip route get 1.1.1.1` |
 | `enp0s3` | Nome usado nos exemplos do relatório para a interface monitorada |
 | `/etc/suricata/rules/local.rules` | Arquivo das regras locais do experimento |
@@ -78,6 +80,7 @@ Um IDS de rede opera de forma passiva: observa os pacotes, aplica assinaturas/re
 ## IV. Instalação e Preparação
 
 > Se a interface indicada por `ip route get 1.1.1.1` não for `enp0s3`, substitua apenas esse nome nos comandos de inicialização e captura que usam a interface de rede.
+> Mantenha essa interface anotada antes de seguir, pois ela será usada na inicialização do Suricata e nos comandos de verificação do laboratório.
 
 ### 1) Preparar o ambiente no VirtualBox
 
@@ -226,6 +229,7 @@ Antes de iniciar os cenários, confirme:
 * as **4 regras locais** foram validadas com `suricata -T`;
 * o processo do **Suricata** está em execução;
 * o terminal de acompanhamento do `fast.log` está aberto;
+* a interface monitorada foi identificada previamente (ex.: **`enp0s3`**);
 * a VM possui conectividade para gerar o tráfego HTTP e DNS do experimento.
 
 ### Organização dos terminais
