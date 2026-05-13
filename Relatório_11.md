@@ -47,19 +47,49 @@ Um IDS de rede opera de forma passiva: observa os pacotes, aplica assinaturas/re
 
 > **Topologia:** **user 1 - Debian ↔ NAT (VBox) ↔ Internet**.
 
+### 1) Resumo do laboratório
+
+| Elemento | Definição |
+| --- | --- |
+| Rede do VirtualBox | **NAT** com DHCP do VirtualBox |
+| VM do laboratório | **user 1 - Debian** |
+| Papel da VM | Sensor IDS com **Suricata** e cliente que gera o tráfego |
+| Tráfego observado | Saída da própria VM para a Internet |
+| Evidências principais | Alertas em `fast.log` e eventos em `eve.json` |
+| Recursos da VM | **6 GB de RAM** e **3 núcleos de CPU** |
+
+### 2) Referências usadas durante a execução
+
+| Item | Uso |
+| --- | --- |
+| Interface de saída da VM | Confirmada com `ip route get 1.1.1.1` |
+| `enp0s3` | Nome usado nos exemplos do relatório para a interface monitorada |
+| `/etc/suricata/rules/local.rules` | Arquivo das regras locais do experimento |
+| `/var/log/suricata/fast.log` | Log textual acompanhado durante os testes |
+| `/var/log/suricata/eve.json` | Log JSON usado para consulta alternativa dos alertas |
+
+### 3) Pacotes usados no laboratório
+
+* `dnsutils`, `net-tools`, `curl`, `wget`
+* `suricata`, `tcpdump`, `jq`
+
 ---
 
 ## IV. Instalação e Preparação
 
-### 0) Preparar ambiente no VirtualBox (padrão do laboratório)
+> Se a interface indicada por `ip route get 1.1.1.1` não for `enp0s3`, substitua apenas esse nome nos comandos de inicialização e captura que usam a interface de rede.
+
+### 1) Preparar o ambiente no VirtualBox
 
 * **VM:** `user 1 - Debian`
 * **Adapter 1:** **NAT** (DHCP do VirtualBox)
 * **Recursos da VM:** **6 GB de RAM** e **3 núcleos de CPU**
 
-### 1) Verificações iniciais e padronização de rede
+> **Ao final desta etapa:** a VM deve estar configurada em **NAT**, com os recursos previstos e pronta para receber endereçamento via DHCP.
 
-#### Primeiro, padronize a rede em DHCP (passo padrão):
+### 2) Conferir a rede e padronizar o DHCP
+
+#### A) Padronizar a interface em DHCP
 
 ```bash
 IFACE=$(ip route | awk '/default/ {print $5; exit}')
@@ -69,7 +99,7 @@ sudo dhclient "$IFACE"
 ip -4 a show "$IFACE"
 ```
 
-#### Após ligar a VM:
+#### B) Validar IP, saída para Internet e interface monitorada
 
 ```bash
 ip a                    # deve obter IP 10.0.2.x (NAT do VBox)
@@ -77,7 +107,13 @@ ping -c2 1.1.1.1        # checar saída para internet
 ip route get 1.1.1.1    # confirmar interface de saída (ex.: enp0s3)
 ```
 
-### A) Prevenir lock do `apt` (passo padrão antes da instalação)
+> **Resultado esperado:** a VM deve apresentar um IP coerente com a rede NAT do VirtualBox, alcançar `1.1.1.1` e indicar a interface de saída usada pelo tráfego observado no laboratório.
+
+> **Ao final desta etapa:** a conectividade externa e a interface de monitoramento devem estar confirmadas antes da instalação do Suricata.
+
+### 3) Preparar o sistema antes da instalação
+
+#### A) Prevenir lock do `apt`
 
 ```bash
 sudo systemctl stop packagekit || true
@@ -85,13 +121,19 @@ sudo pkill -x packagekitd || true
 sudo dpkg --configure -a
 ```
 
-### B) Instalar utilitários e Suricata
+> **Ao final desta etapa:** o sistema deve estar liberado para instalar os pacotes do laboratório sem conflito de gerenciador de pacotes.
+
+### 4) Instalar utilitários e Suricata
 
 ```bash
 sudo apt update && sudo apt install -y dnsutils net-tools curl wget suricata tcpdump jq
 ```
 
-### C) Regras locais (Suricata 6/7 — sticky buffers + classtype)
+> **Ao final desta etapa:** todas as ferramentas necessárias para gerar tráfego, monitorar a rede e consultar alertas devem estar instaladas.
+
+### 5) Criar e validar as regras locais
+
+#### A) Entender o papel das regras
 
 > **O que cada regra faz (antes do código):**
 >
@@ -102,6 +144,8 @@ sudo apt update && sudo apt install -y dnsutils net-tools curl wget suricata tcp
 
 > **Arquivo:** `/etc/suricata/rules/local.rules` (uma **linha por regra**)
 
+#### B) Criar o arquivo `local.rules`
+
 ```bash
 sudo tee /etc/suricata/rules/local.rules >/dev/null <<'RULES'
 alert http any any -> any any (msg:"CUSTOM BROWSER - HTTP URI trigger"; flow:to_server; http.uri; content:"/SURICATA_BROWSER_URI_01"; nocase; sid:1002001; rev:4; classtype:web-application-activity; priority:2;)
@@ -111,7 +155,7 @@ alert udp any any -> any 53 (msg:"CUSTOM BROWSER - DNS query trigger"; dns.query
 RULES
 ```
 
-**Validar sintaxe**:
+#### C) Validar a sintaxe das regras
 
 ```bash
 sudo suricata -T -S /etc/suricata/rules/local.rules -v
@@ -120,9 +164,13 @@ sudo suricata -T -S /etc/suricata/rules/local.rules -v
 
 <img width="1237" height="535" alt="image" src="https://github.com/user-attachments/assets/6af89f35-15a0-470d-a964-1f63724d2e8a" />
 
-### D) Iniciar o Suricata (modo IDS) — **manual, sem `--set`**
+> **Ao final desta etapa:** o arquivo de regras deve existir e o Suricata deve confirmar o carregamento correto das **4 regras locais**.
+
+### 6) Iniciar o Suricata em modo IDS e verificar a operação
 
 > Em Debian, usar `--set outputs.*` pode causar erro de “child node (null)”. Usaremos o YAML padrão.
+
+#### A) Subir o Suricata manualmente
 
 ```bash
 # parar instâncias anteriores e limpar pid/log
@@ -139,13 +187,28 @@ ps aux | grep '[s]uricata'
 sudo tail -n 15 /var/log/suricata/suricata.log
 ```
 
+#### B) Confirmar onde os alertas serão acompanhados
+
 **Onde ver alertas:** `tail -f /var/log/suricata/fast.log`
 
 **Alternativa JSON:** `jq 'select(.event_type=="alert")' /var/log/suricata/eve.json | tail -n 5`
 
+> **Ao final desta etapa:** o Suricata deve estar ativo em modo IDS, carregando `local.rules` e com os arquivos de log prontos para a observação dos testes.
+
 ---
 
 ## V. Procedimentos (Passo a Passo — **user 1 - Debian ↔ Internet**)
+
+### Checklist antes dos testes
+
+Antes de iniciar os cenários, confirme:
+
+* as **4 regras locais** foram validadas com `suricata -T`;
+* o processo do **Suricata** está em execução;
+* o terminal de acompanhamento do `fast.log` está aberto;
+* a VM possui conectividade para gerar o tráfego HTTP e DNS do experimento.
+
+### Organização dos terminais
 
 Abra dois terminais:
 
@@ -159,7 +222,7 @@ Abra dois terminais:
 
 **O que este teste demonstra:** que o Suricata consegue **inspecionar a URI** (caminho) de uma requisição HTTP e gerar alerta quando encontra a **string-alvo**.
 
-**Como executar:**
+#### A) Executar o gatilho
 
 ```bash
 curl -4 -s 'http://neverssl.com/SURICATA_BROWSER_URI_01' >/dev/null
@@ -170,8 +233,12 @@ curl -4 -s 'http://neverssl.com/SURICATA_BROWSER_URI_01' >/dev/null
 
 <img width="1785" height="207" alt="image" src="https://github.com/user-attachments/assets/75343aec-013b-4504-be75-92acb3f86fa6" />
 
+#### B) Observar o alerta no log
+
 **O que observar no log:** uma linha no `fast.log` com a mensagem
 `CUSTOM BROWSER - HTTP URI trigger` (SID 1002001), indicando tráfego `{TCP} <IP_VM>:<porta> -> <IP_destino>:80`.
+
+> **Ao final deste cenário:** deve existir evidência de que a regra de **URI** foi acionada pelo tráfego HTTP gerado.
 
 ---
 
@@ -179,7 +246,7 @@ curl -4 -s 'http://neverssl.com/SURICATA_BROWSER_URI_01' >/dev/null
 
 **O que este teste demonstra:** que o Suricata consegue **inspecionar o corpo** (payload) de uma **requisição HTTP** (POST/PUT) e alertar quando a **string** estiver presente.
 
-**Como executar:**
+#### A) Executar o gatilho
 
 ```bash
 curl -4 -s -X POST -d 'SURICATA_BROWSER_BODY_02' 'http://neverssl.com/' >/dev/null
@@ -190,9 +257,13 @@ curl -4 -s -X POST -d 'SURICATA_BROWSER_BODY_02' 'http://neverssl.com/' >/dev/nu
 
 <img width="1785" height="218" alt="image" src="https://github.com/user-attachments/assets/24087409-8c8b-4a65-b4f8-8fe91cf8ccb7" />
 
+#### B) Observar o alerta no log
+
 **O que observar no log:** a mensagem
 `CUSTOM BROWSER - HTTP client body trigger` (SID 1002002).
 Se não disparar de primeira, rode com `-v` e valide que o **POST** saiu; rode novamente.
+
+> **Ao final deste cenário:** deve existir evidência de que a regra de **corpo da requisição** foi acionada.
 
 ---
 
@@ -200,7 +271,7 @@ Se não disparar de primeira, rode com `-v` e valide que o **POST** saiu; rode n
 
 **O que este teste demonstra:** que o Suricata consegue **inspecionar cabeçalhos HTTP** e gerar alerta quando um **cabeçalho customizado** (`X-Trigger-Lab: 1`) está presente.
 
-**Como executar:**
+#### A) Executar o gatilho
 
 ```bash
 curl -4 -s -H 'X-Trigger-Lab: 1' 'http://neverssl.com/' >/dev/null
@@ -211,8 +282,12 @@ curl -4 -s -H 'X-Trigger-Lab: 1' 'http://neverssl.com/' >/dev/null
 
 <img width="1782" height="256" alt="image" src="https://github.com/user-attachments/assets/6f87fb49-cc08-4880-9b18-6cc2c3657e72" />
 
+#### B) Observar o alerta no log
+
 **O que observar no log:** a mensagem
 `CUSTOM BROWSER - HTTP header X-Trigger-Lab` (SID 1002003), com fluxo `{TCP} <IP_VM>:<porta> -> <IP_destino>:80`.
+
+> **Ao final deste cenário:** deve existir evidência de que a regra de **cabeçalho HTTP** foi acionada.
 
 ---
 
@@ -220,7 +295,7 @@ curl -4 -s -H 'X-Trigger-Lab: 1' 'http://neverssl.com/' >/dev/null
 
 **O que este teste demonstra:** que o Suricata enxerga **consultas DNS** (nomes de domínio) e alerta quando a consulta contém o **domínio-alvo**.
 
-**Como executar:**
+#### A) Executar o gatilho
 
 ```bash
 dig +short suricata-trigger-lab.example >/dev/null
@@ -231,14 +306,24 @@ dig +short suricata-trigger-lab.example >/dev/null
 
 <img width="1777" height="287" alt="image" src="https://github.com/user-attachments/assets/5cb962e1-b239-4938-ac74-6255a2d782f4" />
 
+#### B) Observar o alerta no log
+
 **O que observar no log:** a mensagem
 `CUSTOM BROWSER - DNS query trigger` (SID 1002004), com fluxo `{UDP} <IP_VM>:<porta> -> <DNS_resolvedor>:53`.
+
+> **Ao final deste cenário:** deve existir evidência de que a regra de **consulta DNS** foi acionada.
 
 ---
 
 ## VI. Verificação e Resultados
 
-### 1) Quadro comparativo (cenários)
+### 1) Checklist de sucesso do experimento
+
+* `suricata -T` retorna `4 rules successfully loaded, 0 rules failed`.
+* O Suricata permanece em execução (`ps aux | grep '[s]uricata'`) e sem erro crítico no `suricata.log`.
+* Cada um dos quatro cenários gera o alerta correspondente em `fast.log` ou `eve.json`.
+
+### 2) Quadro comparativo (cenários)
 
 | Cenário | Tráfego                      | Regra envolvida (msg)                        | SID     | Resultado esperado | Onde verificar     |
 | :-----: | ---------------------------- | -------------------------------------------- | ------- | ------------------ | ------------------ |
@@ -247,7 +332,7 @@ dig +short suricata-trigger-lab.example >/dev/null
 |    3    | user 1 - Debian → Internet (HTTP/Header) | `CUSTOM BROWSER - HTTP header X-Trigger-Lab` | 1002003 | **Alertas**        | `fast.log` / `eve.json` |
 |    4    | user 1 - Debian → Internet (DNS)         | `CUSTOM BROWSER - DNS query trigger`         | 1002004 | **Alertas**        | `fast.log` / `eve.json` |
 
-### 2) Coleta rápida e critérios de sucesso (guia)
+### 3) Coleta rápida dos alertas
 
 ```bash
 # Últimos alertas (formato fast)
@@ -258,11 +343,7 @@ jq -r 'select(.event_type=="alert") | "\(.timestamp) SID=\(.alert.signature_id) 
   /var/log/suricata/eve.json | tail -n 10
 ```
 
-**Critérios de sucesso da execução:**
-
-* `suricata -T` retorna `4 rules successfully loaded, 0 rules failed`.
-* Suricata em execução (`ps aux | grep '[s]uricata'`) e sem erro crítico no `suricata.log`.
-* Pelo menos um alerta esperado aparece em `fast.log` ou `eve.json` após os testes.
+> Use esta coleta rápida ao final dos cenários para consolidar a evidência dos alertas em formato textual ou JSON.
 
 ---
 
