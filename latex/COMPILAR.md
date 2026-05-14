@@ -14,11 +14,13 @@ Para compilar os arquivos .tex, abra o terminal na pasta onde estão os arquivos
 
 ```sh
 pdflatex.exe --output-directory=out Relatorio.tex
+
 ```
 
 Caso queira compilar todos os arquivos que começam com "Rel", utilize o seguinte comando:
 
 ```sh
 fd -d1 "Rel*" | while read a; do pdflatex.exe --output-directory=out $a; done
+
 ```
 
