@@ -122,7 +122,8 @@ iface <interface> inet dhcp
 Depois recarregue a interface:
 
 ```bash
-sudo ifdown <interface> && sudo ifup <interface>
+sudo ifdown <interface> || true
+sudo ifup <interface>
 ```
 
 #### B) Renovar lease DHCP diretamente pela interface ativa

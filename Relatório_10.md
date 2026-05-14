@@ -136,7 +136,8 @@ Use este ajuste em **cada VM Debian** quando ela estiver sem IPv4 válido, fora 
    Em seguida, recarregue a interface:
 
    ```bash
-   sudo ifdown <interface> && sudo ifup <interface>
+   sudo ifdown <interface> || true
+   sudo ifup <interface>
    ```
 
 #### B) Conferir IPs e validar comunicação
