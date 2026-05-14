@@ -48,7 +48,6 @@ Aplicaremos **regras** (ex.: **bloquear HTTP**, **bloquear um site específico**
   * **Adapter 1:** **Rede Interna** **`LAN_PFS`** (IP via **DHCP** do pfSense).
   * **Recursos da VM:** **6 GB de RAM** e **3 núcleos de CPU**
 
-> **Assunção para o lab:** usar a **configuração padrão do pfSense** para LAN (ex.: `192.168.1.1/24` com DHCP habilitado). Não trataremos o “primeiro setup” do pfSense neste relatório.
 
 > **Observação:** Diferente do Relatório 10 (NAT Network para ambas as VMs), aqui o pfSense **precisa de duas interfaces** (WAN e LAN). Por isso usamos **NAT** (WAN) + **Rede Interna** (LAN).
 
