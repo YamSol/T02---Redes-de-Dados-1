@@ -1,4 +1,4 @@
-<img width="180" alt="image" src="https://github.com/user-attachments/assets/cf68b22b-ecb8-4e9e-8f09-271ef1bc1246" />
+<img width="180" alt="Logo T02" src="https://github.com/user-attachments/assets/cf68b22b-ecb8-4e9e-8f09-271ef1bc1246" />
 
 <div align="right">
 T02 - Redes de Dados
@@ -38,7 +38,7 @@ Aplicaremos **regras** (ex.: **bloquear HTTP**, **bloquear um site específico**
 
 **VirtualBox (2 VMs):**
 
-* **VM-pfSense**
+* **VM-pfSense**v
 
   * **Adapter 1 (WAN):** **NAT** (DHCP do VBox).
   * **Adapter 2 (LAN):** **Rede Interna** chamada **`LAN_PFS`** (pfSense atende esta LAN).
@@ -95,7 +95,8 @@ Aplicaremos **regras** (ex.: **bloquear HTTP**, **bloquear um site específico**
   * **Habilitar Placa de Rede**
   * **Conectado a:** **NAT**
   * **Anotar o endereço MAC do adaptador** — os últimos 4 caracteres são suficientes para posterior configuração no pfSense.
-  <img width="806" height="377" alt="image" src="https://github.com/user-attachments/assets/ed4886ae-aed5-4681-b021-6a73fbf13397" />
+  
+  <img width="800" alt="Adaptador 1 NAT" src="https://github.com/user-attachments/assets/ed4886ae-aed5-4681-b021-6a73fbf13397" />
 
 * **Adaptador 2 (LAN):**
 
@@ -103,7 +104,8 @@ Aplicaremos **regras** (ex.: **bloquear HTTP**, **bloquear um site específico**
   * **Conectado a:** **Rede Interna**
   * **Nome:** **`LAN_PFS`**  ← **digite exatamente este nome** (se não existir, o VirtualBox cria ao salvar).
   * **Anotar o endereço MAC do adaptador** — os últimos 4 caracteres são suficientes para posterior configuração no pfSense.
-  <img width="800" height="375" alt="image" src="https://github.com/user-attachments/assets/ca317cf7-a5c4-4fff-b7b3-fd1f3e8ca574" />
+  
+  <img width="800" alt="Adaptador 2 Rede Interna" src="https://github.com/user-attachments/assets/ca317cf7-a5c4-4fff-b7b3-fd1f3e8ca574" />
 
 * **OK**.
 
@@ -113,7 +115,8 @@ Aplicaremos **regras** (ex.: **bloquear HTTP**, **bloquear um site específico**
 
 * **Botão direito** na VM **Debian** → **Configurações** → **Rede**.
 * **Adaptador 1:** **Rede Interna** → **Nome:** **`LAN_PFS`**.
-<img width="802" height="334" alt="image" src="https://github.com/user-attachments/assets/f28dd00a-cc73-4b28-9f10-47232d2b9d10" />
+
+<img width="800" alt="Debian Rede Interna" src="https://github.com/user-attachments/assets/f28dd00a-cc73-4b28-9f10-47232d2b9d10" />
 
 * **OK**.
 
@@ -121,8 +124,7 @@ Aplicaremos **regras** (ex.: **bloquear HTTP**, **bloquear um site específico**
 
 * Inicie a VM **pfSense** no VirtualBox e aguarde o carregamento completo.
 
-<!-- PRINT 000: tela inicial do pfSense logo após o boot, mostrando o menu de opções (1-16) e o banner com WAN/LAN ainda sem IP atribuído -->
-<img width="1281" height="606" alt="000" src="https://github.com/user-attachments/assets/e294a17e-ef55-4c15-ba03-bacf3f0eb116" />
+<img width="800" alt="Tela inicial do pfSense" src="https://github.com/user-attachments/assets/e294a17e/ef55-4c15-ba03-bacf3f0eb116" />
 
 
 4. **OBSERVAÇÕES**
@@ -136,14 +138,14 @@ No terminal do pfSense:
 1. Selecionar a opção **`4) Reset to factory`**: -> Digite 4. Pressione Enter.
 2. Confirme digitando **`y`** e pressionando Enter.
 
-<!-- PRINT 001: tela do pfSense durante/após o "Reset to factory defaults", mostrando a confirmação e o retorno ao menu principal -->
-<img width="1299" height="580" alt="001" src="https://github.com/user-attachments/assets/96693b1d-45c0-43f6-b8c6-f6f4c0410b93" />
+<img width="800" alt="Reset to factory defaults" src="https://github.com/user-attachments/assets/96693b1d-45c0-43f6-b8c6-f6f4c0410b93" />
 
 
 #### B) Associar interfaces de rede
 
 Na tela de boas-vindas do pfSense, é possível verificar que existem duas interfaces: **em0** e **em1**.
-<img width="800" alt="000 welcome com indicacao das duas interfaces existentes" src="https://github.com/user-attachments/assets/1417dec6-ddea-4bb7-b24f-99c60ae03e8a" />
+
+<img width="800" alt="Tela welcome com interfaces" src="https://github.com/user-attachments/assets/1417dec6-ddea-4bb7-b24f-99c60ae03e8a" />
 
 
 1. Digite **`1`** e pressione **Enter** para selecionar **"Assign Interfaces"**.
@@ -155,7 +157,8 @@ Na tela de boas-vindas do pfSense, é possível verificar que existem duas inter
    * Para **LAN**, selecione a interface cujo MAC corresponde ao adaptador **Rede Interna** (`LAN_PFS`).
 
 5. Quando perguntado **"Do you want to proceed?"**, digite **`y`** e pressione **Enter**.
-<img width="800" alt="001 associacao de interfaces no pfsense" src="https://github.com/user-attachments/assets/a8dd0bcc-f28d-4292-a8a2-969345070ee7" />
+
+<img width="800" alt="Associação de interfaces no pfSense" src="https://github.com/user-attachments/assets/a8dd0bcc-f28d-4292-a8a2-969345070ee7" />
 
 6. Aguarde a conclusão. Na tela de boas-vindas, a associação estará atualizada — no teste realizado: **em0 → WAN** e **em1 → LAN**.
 
@@ -169,14 +172,14 @@ Como o adaptador WAN é do tipo **NAT**, o VirtualBox fornece endereço IP autom
 4. **"Configure IPv6 address WAN interface via DHCP6?"** → Digite **`n`** e pressione **Enter**.
 5. Pressione **Enter** (para que o endereço IPv6 não seja configurado).
 6. **"Do you want to revert to HTTP as the webConfigurator protocol?"** → Digite **`n`** e pressione **Enter**.
-<img width="800" alt="002 atribuindo DHCP para interface WAN" src="https://github.com/user-attachments/assets/47148e09-163d-4138-9e53-c1bfd7607010" />
+
+<img width="800" alt="Atribuindo DHCP para interface WAN" src="https://github.com/user-attachments/assets/47148e09-163d-4138-9e53-c1bfd7607010" />
 
 7. Quando solicitado, pressione **Enter** para retornar ao menu principal.
 
 Após a conclusão, na tela de boas-vindas a linha **WAN** deverá indicar **v4/DHCP** e um endereço IP condizente com a rede NAT do VirtualBox (ex.: `10.0.2.x`).
 
-<!-- PRINT 002: tela de boas-vindas do pfSense já com a linha "WAN (em0) -> v4/DHCP4: 10.0.2.x" preenchida -->
-<img width="1263" height="292" alt="002" src="https://github.com/user-attachments/assets/3f460d76-e6e5-426d-bd6d-b52e1bce5bcc" />
+<img width="800" alt="pfSense WAN com DHCP" src="https://github.com/user-attachments/assets/3f460d76-e6e5-426d-bd6d-b52e1bce5bcc" />
 
 
 > **Ao final desta etapa:** a interface WAN do pfSense deve ter recebido endereço IPv4 via DHCP do VirtualBox.
@@ -191,21 +194,22 @@ Como a **Rede Interna** não possui nenhum serviço DHCP por parte do VirtualBox
 4. Digite o endereço IP **`192.168.1.1`** e pressione **Enter**.
 5. Digite a máscara de sub-rede **`24`** e pressione **Enter**.
 6. Pressione **Enter** (sem digitar nada) para o campo de upstream gateway.
-<img width="800" alt="003 atribuindo ip estático para interface LAN" src="https://github.com/user-attachments/assets/ee63ff00-d73b-44ee-a4f8-70c42eccbb8c" />
+
+<img width="800" alt="Atribuindo IP estático para interface LAN" src="https://github.com/user-attachments/assets/ee63ff00-d73b-44ee-a4f8-70c42eccbb8c" />
 
 7. **"Configure IPv6 address LAN interface via DHCP6?"** → Digite **`n`** e pressione **Enter**.
 8. Pressione **Enter** (sem digitar nada) para o campo de endereço IPv6.
 9. **"Do you want to enable the DHCP server on LAN?"** → Digite **`y`** e pressione **Enter**.
 10. **"Enter the start address of the IPv4 client address range:"** → Digite **`192.168.1.10`** e pressione **Enter**.
 11. **"Enter the end address of the IPv4 client address range:"** → Digite **`192.168.1.254`** e pressione **Enter**.
-<img width="800" alt="004 ativando servidor DHCP para interface LAN" src="https://github.com/user-attachments/assets/a87843d7-7493-49e1-9fd4-c617b98efccc" />
+
+<img width="800" alt="Ativando servidor DHCP para interface LAN" src="https://github.com/user-attachments/assets/a87843d7-7493-49e1-9fd4-c617b98efccc" />
 
 12. **"Do you want to revert to HTTP as the webConfigurator protocol?"** → Digite **`n`** e pressione **Enter**.
 
 Quando solicitado que se pressione **Enter**, surgirá a mensagem **"You can access the webConfigurator by opening the following URL in your browser"**, confirmando que o IP foi corretamente configurado. O endereço estático da interface LAN (**`192.168.1.1`**) também será exibido — máquinas conectadas à Rede Interna já podem acessar o pfSense por esse endereço.
 
-<!-- PRINT 003: tela final de boas-vindas do pfSense já com as duas linhas preenchidas: "WAN (em0) -> v4/DHCP4: 10.0.2.x" e "LAN (em1) -> v4: 192.168.1.1/24", confirmando o gateway pronto -->
-<img width="1203" height="279" alt="003" src="https://github.com/user-attachments/assets/cb4b76ea-cfe8-472c-b3cb-bc16815cd524" />
+<img width="800" alt="Gateway pfSense pronto" src="https://github.com/user-attachments/assets/cb4b76ea-cfe8-472c-b3cb-bc16815cd524" />
 
 
 > **Ao final desta etapa:** o pfSense deve estar com WAN ativa via DHCP, LAN estática em `192.168.1.1/24` e servidor DHCP ativo na LAN distribuindo IPs em `192.168.1.10-254`.
@@ -247,8 +251,7 @@ Inicie a VM **Debian**.
    ping -c2 8.8.8.8
    ```
 
-   <!-- PRINT 004: saída combinada dos três comandos no terminal do Debian: `ip a` mostrando IP `192.168.1.x` na interface, `ip route` com "default via 192.168.1.1" e `ping -c2 8.8.8.8` com 2 respostas (0% packet loss) -->
-   <img width="1519" height="886" alt="004" src="https://github.com/user-attachments/assets/eaeb4310-122b-43e0-a14b-575813439813" />
+   <img width="800" alt="Terminal Debian conectado à LAN" src="https://github.com/user-attachments/assets/eaeb4310-122b-43e0-a14b-575813439813" />
 
 
 6. **Instale utilitários de rede:**
@@ -256,23 +259,20 @@ Inicie a VM **Debian**.
    sudo apt update && sudo apt install -y net-tools dnsutils curl
    ```
 
-   <!-- PRINT 005: terminal do Debian mostrando o término do `apt install` com a lista de pacotes instalados -->
-   <img width="1357" height="720" alt="005" src="https://github.com/user-attachments/assets/a5555d9c-c045-4f96-8c4a-69c436dd524a" />
+   <img width="800" alt="Pacotes instalados no Debian" src="https://github.com/user-attachments/assets/a5555d9c-c045-4f96-8c4a-69c436dd524a" />
 
 
 8. **Acesse a WebGUI do pfSense:** no navegador do Debian, abra `https://192.168.1.1` (o IP LAN do pfSense).
 
 9. Ignore o aviso de certificado autoassinado: clique em **Advanced...** e depois em **Accept the Risk and Continue**.
-   <img width="800" alt="image" src="https://github.com/user-attachments/assets/93f8d318-91b0-4530-a728-449236d65ab5" />
+   
+   <img width="800" alt="Aviso certificado pfSense" src="https://github.com/user-attachments/assets/93f8d318-91b0-4530-a728-449236d65ab5" />
 
 10. Credenciais de acesso: usuário `admin`, senha `pfsense`.
 
-   <!-- PRINT 006: tela de login da WebGUI do pfSense (campo Username/Password) preenchida com `admin` -->
-   <img width="1416" height="934" alt="006" src="https://github.com/user-attachments/assets/527dc89e-c399-4cb8-a3aa-451ab270d2c4" />
+   <img width="800" alt="Login WebGUI pfSense" src="https://github.com/user-attachments/assets/527dc89e-c399-4cb8-a3aa-451ab270d2c4" />
 
-
-   <!-- PRINT 007: Dashboard inicial do pfSense logo após o login (System Information, Interfaces com WAN e LAN listadas) -->
-   <img width="1659" height="808" alt="007" src="https://github.com/user-attachments/assets/e6ab7283-3715-4099-973a-c56755a7a121" />
+   <img width="800" alt="Dashboard inicial pfSense" src="https://github.com/user-attachments/assets/e6ab7283-3715-4099-973a-c56755a7a121" />
 
 
 > **Ao final desta etapa:** o Debian deve estar com IP na sub-rede `192.168.1.0/24`, gateway apontando para `192.168.1.1`, acesso à Internet funcionando e a WebGUI do pfSense aberta e logada.
@@ -300,7 +300,8 @@ Antes de iniciar os cenários, confirme:
 **Objetivo:** impedir navegação HTTP (em texto claro), mantendo a versão com criptografia (HTTPS) funcional.
 
 1. **pfSense (WebGUI):** Na interface web, abra a página Firewall > Rules > LAN, e clique em `Add (seta para cima)`
-   <img width="800" alt="000 cenario 1 interface web abrindo pagina rules" src="https://github.com/user-attachments/assets/f697d5ae-16d7-4d85-977e-95004caaaff4" />
+   
+   <img width="800" alt="Interface web Rules LAN" src="https://github.com/user-attachments/assets/f697d5ae-16d7-4d85-977e-95004caaaff4" />
 2. Defina os parâmetro de necessários, listados abaixo:
    * **Action:** *Block*
    * **Interface:** *LAN*
@@ -313,12 +314,9 @@ Antes de iniciar os cenários, confirme:
    * **Description:** `BLOCK_LAN_HTTP_OUT`
    * **Save** → **Apply Changes**
 
-   <!-- PRINT 008: formulário "Edit Firewall Rule" preenchido com todos os campos acima visíveis (Action=Block, Protocol=TCP, Source=LAN subnets, Destination port=HTTP, Log marcado, Description=BLOCK_LAN_HTTP_OUT) -->
-   <img width="1588" height="939" alt="008" src="https://github.com/user-attachments/assets/5945aa7d-aac7-4588-beed-3e62188e9e64" />
+   <img width="800" alt="Regra bloquear HTTP" src="https://github.com/user-attachments/assets/5945aa7d-aac7-4588-beed-3e62188e9e64" />
 
-
-   <!-- PRINT 009: tela `Firewall > Rules > LAN` após Apply Changes, mostrando a nova regra `BLOCK_LAN_HTTP_OUT` listada acima da regra "Default allow LAN to any" -->
-   <img width="1438" height="627" alt="009" src="https://github.com/user-attachments/assets/9e165a04-99c3-4047-af5b-ec4ed8b984db" />
+   <img width="800" alt="Regras LAN com bloqueio HTTP" src="https://github.com/user-attachments/assets/9e165a04-99c3-4047-af5b-ec4ed8b984db" />
 
 
 #### Validação 1 (terminal Debian):
@@ -326,10 +324,12 @@ Antes de iniciar os cenários, confirme:
    ```bash
    curl -v -m4 http://example.com
    ```
-   <img width="800" alt="001 cenario1 validacao1 falha ao requisitar HTTP" src="https://github.com/user-attachments/assets/e62fcfa9-7746-464c-a0ec-03b11057337e" />
+
+   <img width="800" alt="Falha curl HTTP" src="https://github.com/user-attachments/assets/e62fcfa9-7746-464c-a0ec-03b11057337e" />
 
 2. Em seguida, altere o comando, substituindo `http` por `https`, e execute-o. A requisição deve retornar o código de resposta `200 OK`.
-   <img width="800" alt="002 cenario1 validacao2 sucesso ao requisitar HTTPS" src="https://github.com/user-attachments/assets/409fb7f4-176d-4389-918e-a2290bbd6c9d" />
+   
+   <img width="800" alt="Sucesso curl HTTPS" src="https://github.com/user-attachments/assets/409fb7f4-176d-4389-918e-a2290bbd6c9d" />
 
   
 #### **Validação 2 (Página Logs):**
@@ -338,7 +338,8 @@ Aqui iremos validar o bloqueio realizado por meio da interface web do pfSense:
 1. Abra a página **Status > System Logs > Firewall**
 2. Selecione os filtros para interface (`LAN`), porta de destino (`80`).
 3. Verifique entradas **blocked** oriundas do IP do Debian.
-   <img width="800" alt="003 cenario1 aplicando filtros na pagina Logs" src="https://github.com/user-attachments/assets/f3294c68-a7ce-421f-a93c-ddf7095b6351" />
+
+   <img width="800" alt="Logs firewall bloqueio HTTP" src="https://github.com/user-attachments/assets/f3294c68-a7ce-421f-a93c-ddf7095b6351" />
 
 > **Ao final deste cenário:** o tráfego HTTP do Debian deve ser bloqueado pela regra `BLOCK_LAN_HTTP_OUT`, HTTPS deve continuar funcionando, e os bloqueios devem aparecer registrados no `Firewall Log` com action **block** e dst port `80`.
 
@@ -365,12 +366,9 @@ Em "Host(s)":
 * **Description:** `FQDN do site a bloquear`
 * **Save** → **Apply Changes**
 
-<!-- PRINT 010: formulário "Edit Alias" preenchido com Name=BLOCK_WIKI, Type=Host(s), IP or FQDN=www.wikipedia.org -->
-<img width="1435" height="652" alt="010" src="https://github.com/user-attachments/assets/d34024a5-29b1-4035-ae02-23ecd81c4c11" />
+<img width="800" alt="Criar alias para site" src="https://github.com/user-attachments/assets/d34024a5-29b1-4035-ae02-23ecd81c4c11" />
 
-
-<!-- PRINT 011: tela `Firewall > Aliases` após salvar, mostrando o alias `BLOCK_WIKI` listado com o FQDN `www.wikipedia.org` -->
-<img width="1423" height="505" alt="011" src="https://github.com/user-attachments/assets/c0fb3552-c159-4216-948f-6cbd49deb482" />
+<img width="800" alt="Alias criado para Wikipedia" src="https://github.com/user-attachments/assets/c0fb3552-c159-4216-948f-6cbd49deb482" />
 
 2. **Criar a regra de bloqueio (pfSense)**
 
@@ -387,8 +385,7 @@ Abra, no menu: **Firewall > Rules > LAN → Add (seta para cima)**. Preencha com
 * **Log:** (marcar opção)
 * **Save** → **Apply Changes**
 
-<!-- PRINT 012: formulário "Edit Firewall Rule" preenchido com Destination=Single host or alias e o campo de alias contendo `BLOCK_WIKI`, Description=BLOCK_SITE_WIKIPEDIA -->
-<img width="1074" height="511" alt="012" src="https://github.com/user-attachments/assets/598c435b-fb9d-4795-9341-be8ec860ba8d" />
+<img width="800" alt="Regra bloquear site Wikipedia" src="https://github.com/user-attachments/assets/598c435b-fb9d-4795-9341-be8ec860ba8d" />
 
 
 > [!IMPORTANT]  
@@ -398,15 +395,16 @@ Abra, no menu: **Firewall > Rules > LAN → Add (seta para cima)**. Preencha com
 
 1. Abra **[https://www.wikipedia.org](https://www.wikipedia.org)** → **deve FALHAR** (bloqueado).
 2. Abra **[https://example.com](https://example.com)** → **deve abrir normalmente** (não bloqueado).
-   <!-- PRINT 013 e 014: janela do navegador no Debian mostrando a página de erro ao tentar acessar https://www.wikipedia.org (timeout / "site não pode ser acessado") -->
-   <img width="1236" height="580" alt="013 e 014" src="https://github.com/user-attachments/assets/ada64b7d-844a-4fd1-ac27-cc946857d300" />
+
+   <img width="800" alt="Navegador bloqueio Wikipedia" src="https://github.com/user-attachments/assets/ada64b7d-844a-4fd1-ac27-cc946857d300" />
 
 
 #### **Validação 2 (Página Logs):**
 1. Abra a página **Status > System Logs > Firewall**
 2. Selecione os filtros para interface (`LAN`).
 3. Verifique entradas **blocked** cujo **Destination** é um dos IPs resolvidos para `www.wikipedia.org`.
-   <img width="800"  alt="004 cenario 2 block wiki" src="https://github.com/user-attachments/assets/877268a9-d1a6-4ca5-b764-81563bcbff0f" />
+
+   <img width="800" alt="Logs bloqueio Wikipedia" src="https://github.com/user-attachments/assets/877268a9-d1a6-4ca5-b764-81563bcbff0f" />
 
 
 > **Dica:** Para visualizar a regra é possível limpar os logs anteriores. Na barra `Status /System Logs / Firewall / Normal View`, selecione Configurar (`Manage Log`, icone de ferramenta) e **Clear log**. Repita o teste.
@@ -430,12 +428,9 @@ Abra, no menu: **Firewall > Rules > LAN → Add (seta para cima)**. Preencha com
    * **Description:** `BLOCK_LAN_ICMP_INTERNET`
    * **Save** -> **Apply Changes**
 
-   <!-- PRINT 015: formulário "Edit Firewall Rule" preenchido com Action=Block, Protocol=ICMP, ICMP subtypes=any, Source=LAN subnets, Destination=WAN subnets, Description=BLOCK_LAN_ICMP_INTERNET -->
-   <img width="582" height="597" alt="015" src="https://github.com/user-attachments/assets/27e8e81f-d953-474f-a2cb-be955549a738" />
+   <img width="800" alt="Regra bloquear ICMP Internet" src="https://github.com/user-attachments/assets/27e8e81f-d953-474f-a2cb-be955549a738" />
 
-
-   <!-- PRINT 016: tela `Firewall > Rules > LAN` mostrando a ordem final das três regras criadas (BLOCK_LAN_HTTP_OUT, BLOCK_SITE_WIKIPEDIA, BLOCK_LAN_ICMP_INTERNET) acima da regra "Default allow LAN to any" -->
-   <img width="1158" height="438" alt="016" src="https://github.com/user-attachments/assets/ba0b0f57-3ccf-4090-ac44-9156d896bac6" />
+   <img width="800" alt="Regras LAN finais" src="https://github.com/user-attachments/assets/ba0b0f57-3ccf-4090-ac44-9156d896bac6" />
 
 
 #### **Validação 1 (Debian, terminal):**
@@ -445,13 +440,15 @@ Abra, no menu: **Firewall > Rules > LAN → Add (seta para cima)**. Preencha com
 ping -c2 8.8.8.8
 ping -c2 192.168.1.1
 ```
-<img width="800" alt="005 cenario 3 validacao 1" src="https://github.com/user-attachments/assets/f46059ea-90a7-4867-b7da-bdffbb36cb54" />
+
+<img width="800" alt="Validação ICMP ping" src="https://github.com/user-attachments/assets/f46059ea-90a7-4867-b7da-bdffbb36cb54" />
 
 #### **Validação 2 (Página Logs):**
 1. Abra a página **Status > System Logs > Firewall**
 2. Selecione os filtros para interface (`LAN`) e Destination Address (`8.8.8.8`).
 4. Verifique entradas **blocked** cujo **Destination Addres** pertencem ao IP bloqueado.
-   <img width="800" alt="006 cenario 3 validacao 2" src="https://github.com/user-attachments/assets/2df7f385-9cf2-45a4-a132-6c8298b0d82c" />
+
+   <img width="800" alt="Logs bloqueio ICMP" src="https://github.com/user-attachments/assets/2df7f385-9cf2-45a4-a132-6c8298b0d82c" />
 
 > **Ao final deste cenário:** o `ping` para `8.8.8.8` deve falhar, o `ping` para `192.168.1.1` deve responder, e o `fast.log` do firewall deve registrar **blocks** ICMP saindo da LAN.
 
