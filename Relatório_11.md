@@ -407,7 +407,7 @@ Com **Suricata na própria VM** e **regras locais** simples, comprovamos a detec
 
 ---
 
-## Apêndice — Troubleshooting rápido
+## Apêndice 1 — Troubleshooting rápido
 
 * **Sem alertas no `fast.log`:**
 
@@ -445,3 +445,12 @@ Com **Suricata na própria VM** e **regras locais** simples, comprovamos a detec
 
 * **Classificação diferente no log:**
   Dependendo do mapeamento interno de classificação, `classtype:attempted-recon` pode aparecer como **Attempted Information Leak** no `fast.log`.
+
+
+## Apêndice 2 — Tela preta ao carregar a interface gráfica (VirtualBox)**
+
+ O Debian usa **Wayland** por padrão, que pode ser incompatível com o VirtualBox. Quando a tela ficar escura, pressione **Ctrl + Alt + F2**, faça login e execute:
+ ```bash
+ sudo nano /etc/gdm3/daemon.conf
+ ```
+ Localize `#WaylandEnable=false`, remova o `#`, salve e reinicie. Se não resolver, verifique nas configurações da VM: controladora **VMSVGA**, **aceleração 3D desativada**.
