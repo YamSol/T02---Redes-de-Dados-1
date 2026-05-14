@@ -102,29 +102,15 @@ Um IDS de rede opera de forma passiva: observa os pacotes, aplica assinaturas/re
 
 #### A) Padronizar a interface em DHCP
 
-Se quiser garantir a configuração DHCP pela forma mais geral no Debian, configure o arquivo de interfaces:
-
 ```bash
-ip link show
-sudo nano /etc/network/interfaces
+IFACE=$(ip route | awk '/default/ {print $5; exit}')
+sudo dhclient -r "$IFACE" || true
+sudo ip addr flush dev "$IFACE"
+sudo dhclient "$IFACE"
+ip -4 a show "$IFACE"
 ```
 
-Use o modelo abaixo (substitua `<interface>` pelo nome real, por exemplo `enp0s3`):
-
-```text
-auto lo
-iface lo inet loopback
-
-auto <interface>
-iface <interface> inet dhcp
-```
-
-Depois recarregue a interface:
-
-```bash
-sudo ifdown <interface> || true
-sudo ifup <interface>
-```
+<img width="726" height="235" alt="image" src="https://github.com/user-attachments/assets/905455e8-4a02-4a6a-ab2e-5e7f0ebad5d7" />
 
 #### B) Validar IP, saída para Internet e interface monitorada
 
@@ -137,19 +123,6 @@ ip route get 1.1.1.1    # confirmar interface de saída (ex.: enp0s3)
 <img width="1052" height="538" alt="image" src="https://github.com/user-attachments/assets/50ad173d-5d56-426f-bc52-58c3e6b848a3" />
 
 > **Resultado esperado:** a VM deve apresentar um IP coerente com a rede NAT do VirtualBox, alcançar `1.1.1.1` e indicar a interface de saída usada pelo tráfego observado no laboratório.
-
-#### C) (Opcional) Caso necessário, existe a alternativa abaixo para obter ip automático
-
-```bash
-IFACE=$(ip route | awk '/default/ {print $5; exit}')
-sudo dhclient -r "$IFACE" || true
-sudo ip addr flush dev "$IFACE"
-sudo dhclient "$IFACE"
-ip -4 a show "$IFACE"
-```
-
-<img width="726" height="235" alt="image" src="https://github.com/user-attachments/assets/905455e8-4a02-4a6a-ab2e-5e7f0ebad5d7" />
-
 
 > **Ao final desta etapa:** a conectividade externa e a interface de monitoramento devem estar confirmadas antes da instalação do Suricata.
 
@@ -407,7 +380,7 @@ Com **Suricata na própria VM** e **regras locais** simples, comprovamos a detec
 
 ---
 
-## Apêndice 1 — Troubleshooting rápido
+## Apêndice — Troubleshooting rápido
 
 * **Sem alertas no `fast.log`:**
 
@@ -445,37 +418,3 @@ Com **Suricata na própria VM** e **regras locais** simples, comprovamos a detec
 
 * **Classificação diferente no log:**
   Dependendo do mapeamento interno de classificação, `classtype:attempted-recon` pode aparecer como **Attempted Information Leak** no `fast.log`.
-
-## Apêndice 2 — Tela preta ao carregar a interface gráfica no Debian (VirtualBox)
-
-O Debian moderno utiliza **Wayland** como servidor gráfico padrão, que pode ser incompatível com as controladoras de vídeo virtuais do VirtualBox — a tela fica escura logo após o carregamento dos serviços, impedindo o login gráfico.
-
-**Solução: forçar o uso do Xorg.** Quando a tela ficar escura, pressione **Ctrl + Alt + F2** para abrir um terminal em modo texto, faça login e execute:
-```bash
-sudo nano /etc/gdm3/daemon.conf
-```
-Localize a linha `#WaylandEnable=false`, remova o `#` e salve. Depois reinicie:
-```bash
-sudo reboot
-```
-
-Se o problema persistir, desligue a VM, acesse **Configurações > Tela** no VirtualBox e verifique:
-- Controladora gráfica: **VMSVGA**
-- **Aceleração 3D desativada**
-- Memória de vídeo no máximo disponível
-
-## Apêndice 3 — Instalar VirtualBox Guest Additions
-
-<img width="800" alt="Menu inserir imagem de CD" src="https://github.com/user-attachments/assets/0cc26f4a-24ca-46d9-a223-7b166946d40c" />
-
-1. No menu superior, selecione **Dispositivo** e **"Inserir imagem de CD..."**.
-
-<img width="800" alt="Files executar software Guest Additions" src="https://github.com/user-attachments/assets/59e7f49e-7b79-4c0e-a8b0-054232919920" />
-
-2. Na máquina virtual, abra **Files**, selecione o disco **"Vbox..."** e clique em **"Run Software"**. Quando perguntado, selecione **"Run"** e insira a senha.
-
-<img width="800" alt="Terminal Guest Additions conclusão" src="https://github.com/user-attachments/assets/f5f77df6-697c-4292-9222-b5241002e48f" />
-
-3. Aguarde até a mensagem **"press Return to close this window"**. Pressione **Enter**. No **Files**, desmonte o disco. No menu, selecione **"Máquina"** → **"Reiniciar"** para reiniciar a máquina virtual.
-
-A operação deve ter sido finalizada com sucesso.
