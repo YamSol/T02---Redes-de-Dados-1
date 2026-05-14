@@ -1,4 +1,4 @@
-\input{preamble}
+﻿\input{preamble}
 
 \begin{document}
 
@@ -112,7 +112,7 @@ Substitua as ocorrências de \texttt{<IP\_USER1>} e \texttt{<IP\_USER2>} pelos e
     \item Confirme com \textbf{Aplicar}
   \end{itemize}
 
-\imgph{0.6\linewidth}{https://github.com/user-attachments/assets/a890ec72-c5da-49a0-81c3-e21ee7deb404}
+\imgph{0.6\linewidth}{imgs/a890ec72-c5da-49a0-81c3-e21ee7deb404.png}
 
 \item \textbf{Vincular cada VM à \texttt{NatNetwork}:}
   \begin{itemize}
@@ -121,7 +121,7 @@ Substitua as ocorrências de \texttt{<IP\_USER1>} e \texttt{<IP\_USER2>} pelos e
     \item OK
   \end{itemize}
 
-\imgph{0.6\linewidth}{https://github.com/user-attachments/assets/3a4a1d8a-63b4-4c48-b06a-d65de72964a2}
+\imgph{0.6\linewidth}{imgs/3a4a1d8a-63b4-4c48-b06a-d65de72964a2.png}
 
 \item \textbf{Ajustar recursos de hardware das VMs:}
   \begin{itemize}
@@ -130,7 +130,7 @@ Substitua as ocorrências de \texttt{<IP\_USER1>} e \texttt{<IP\_USER2>} pelos e
     \item Após ajustar os recursos, \textbf{iniciar} as VMs
   \end{itemize}
 
-\imgph{0.4\linewidth}{https://github.com/user-attachments/assets/4e1de125-9012-4b75-b395-e3aa73a179a8}
+\imgph{0.4\linewidth}{imgs/4e1de125-9012-4b75-b395-e3aa73a179a8.png}
 \end{enumerate}
 
 \begin{notebox}
@@ -151,7 +151,7 @@ ip a
     \item Anote o IP do servidor como \texttt{<IP\_USER1>} e o do cliente como \texttt{<IP\_USER2>}.
   \end{itemize}
 
-\imgph{0.8\linewidth}{https://github.com/user-attachments/assets/70c2e67a-184a-487b-a232-36a1759252e1}
+\imgph{0.8\linewidth}{imgs/70c2e67a-184a-487b-a232-36a1759252e1.png}
 
 \item \textbf{Se os IPs estiverem compatíveis}, avance para o teste de comunicação.
 
@@ -180,7 +180,7 @@ No \textbf{user 1 - Debian}, execute:
 ping -c2 <IP_USER2>
 \end{lstlisting}
 
-\imgph{0.8\linewidth}{https://github.com/user-attachments/assets/e537c6a0-607b-4553-abec-e13e0b7375ad}
+\imgph{0.8\linewidth}{imgs/e537c6a0-607b-4553-abec-e13e0b7375ad.png}
 \end{enumerate}
 
 \begin{notebox}
@@ -195,7 +195,7 @@ ping -c2 <IP_USER2>
 sudo apt update && sudo apt install -y apache2 openssl
 \end{lstlisting}
 
-\imgph{0.55\linewidth}{https://github.com/user-attachments/assets/1592bc42-1a35-46b9-8e64-ac8779790f87}
+\imgph{0.55\linewidth}{imgs/1592bc42-1a35-46b9-8e64-ac8779790f87.png}
 
 \subsubsection*{B) Criar página de teste com conteúdo identificável}
 
@@ -204,7 +204,7 @@ sudo mkdir -p /var/www/html
 echo "<h1>HELLO_TLS_HTTP</h1>" | sudo tee /var/www/html/index.html
 \end{lstlisting}
 
-\imgph{0.5\linewidth}{https://github.com/user-attachments/assets/1d5ca830-2b83-4197-9bb3-a7fd1f6852c1}
+\imgph{0.5\linewidth}{imgs/1d5ca830-2b83-4197-9bb3-a7fd1f6852c1.png}
 
 \subsubsection*{C) Ativar o Apache e verificar a porta HTTP}
 
@@ -217,7 +217,7 @@ ss -tulpn | grep :80
 \textbf{Resultado esperado:} deve aparecer uma linha indicando que o Apache está em estado \textbf{LISTEN} na porta \textbf{80}.
 \end{notebox}
 
-\imgph{0.55\linewidth}{https://github.com/user-attachments/assets/2c5dc094-4ede-4deb-90fd-0c3007cca55d}
+\imgph{0.55\linewidth}{imgs/2c5dc094-4ede-4deb-90fd-0c3007cca55d.png}
 
 \begin{notebox}
 \textbf{Ao final desta etapa:} o servidor deve estar respondendo em \textbf{HTTP} na porta \textbf{80}.
@@ -236,7 +236,7 @@ sudo apt update
 sudo apt install -y curl wireshark
 \end{lstlisting}
 
-\imgph{0.5\linewidth}{https://github.com/user-attachments/assets/92dbd981-4482-47f4-a52c-a111d0a10500}
+\imgph{0.5\linewidth}{imgs/92dbd981-4482-47f4-a52c-a111d0a10500.png}
 
 \subsubsection*{B) Abrir o Wireshark e identificar a interface de captura}
 
@@ -246,7 +246,7 @@ sudo wireshark
 
 Esse comando \textbf{apenas abre o programa}. Na tela inicial, identifique a \textbf{interface da NAT Network} (a que mostra o IP do \textbf{user 2 - Debian}, costuma ser \texttt{enp0s3}) e deixe o Wireshark pronto para iniciar a captura no próximo passo.
 
-\imgph{0.7\linewidth}{https://github.com/user-attachments/assets/9e375ed7-f018-4bb6-9ffd-9ccbb67e950a}
+\imgph{0.7\linewidth}{imgs/9e375ed7-f018-4bb6-9ffd-9ccbb67e950a.png}
 
 Durante a análise dos pacotes, use como referência o filtro:
 \begin{lstlisting}
@@ -277,9 +277,9 @@ Antes de iniciar os cenários, confirme:
 
 \textbf{No user 2 - Debian:} com o Wireshark já aberto, \textbf{inicie a captura} na interface da \textbf{NAT Network} identificada anteriormente.
 
-\imgph{0.3\linewidth}{https://github.com/user-attachments/assets/480f3519-fe3c-4dfd-8cec-329fc63a8c0d}
+\imgph{0.3\linewidth}{imgs/480f3519-fe3c-4dfd-8cec-329fc63a8c0d.png}
 
-\imgph{0.6\linewidth}{https://github.com/user-attachments/assets/e8be4387-047f-4705-a085-4eafb714164f}
+\imgph{0.6\linewidth}{imgs/e8be4387-047f-4705-a085-4eafb714164f.png}
 
 \begin{notebox}
 O quadrado vermelho indica que a captura está ativa.
@@ -296,14 +296,14 @@ curl -v http://<IP_USER1>
 \textbf{Resultado esperado:} o \texttt{curl} deve completar a requisição e exibir a resposta do Apache, incluindo \texttt{HELLO\_TLS\_HTTP}.
 \end{notebox}
 
-\imgph{0.45\linewidth}{https://github.com/user-attachments/assets/3c0016d3-3879-4451-94a3-f9b2ad3f8a92}
+\imgph{0.45\linewidth}{imgs/3c0016d3-3879-4451-94a3-f9b2ad3f8a92.png}
 
 \subsubsection*{C) Observar no Wireshark}
 
 \begin{enumerate}
 \item \textbf{Pause a captura} no Wireshark.
 
-\imgph{0.2\linewidth}{https://github.com/user-attachments/assets/cfedfeba-6545-4297-aa1b-530b14688ed8}
+\imgph{0.2\linewidth}{imgs/cfedfeba-6545-4297-aa1b-530b14688ed8.png}
 
 \item Aplique o filtro:
 \begin{lstlisting}
@@ -312,8 +312,8 @@ http && ip.addr == <IP_USER1>
 
 \item \textbf{O que observar:} requisição \texttt{GET / HTTP/1.1} e resposta \texttt{200 OK} com \textbf{payload legível} (HTML contendo \texttt{HELLO\_TLS\_HTTP}).
 
-\imgph{0.7\linewidth}{https://github.com/user-attachments/assets/43497e00-b9d0-436b-8072-859dcaa368e0}
-\imgph{0.5\linewidth}{https://github.com/user-attachments/assets/2310e98c-7f1a-40fc-887a-592cdceb22a9}
+\imgph{0.7\linewidth}{imgs/43497e00-b9d0-436b-8072-859dcaa368e0.png}
+\imgph{0.5\linewidth}{imgs/2310e98c-7f1a-40fc-887a-592cdceb22a9.png}
 \end{enumerate}
 
 \begin{notebox}
@@ -331,7 +331,7 @@ sudo a2ensite default-ssl
 sudo systemctl reload apache2
 \end{lstlisting}
 
-\imgph{0.5\linewidth}{https://github.com/user-attachments/assets/46ea3fc5-5434-44a8-8773-2cb63ed55ee3}
+\imgph{0.5\linewidth}{imgs/46ea3fc5-5434-44a8-8773-2cb63ed55ee3.png}
 
 \begin{notebox}
 Caso apareça um erro relacionado ao Apache, ignore --- ele apenas indica que o Apache não estava rodando anteriormente.
@@ -345,7 +345,7 @@ sudo openssl req -x509 -nodes -days 365 -newkey rsa:2048 \
   -subj "/C=BR/ST=MG/L=Inatel/O=Lab/OU=NetSec/CN=<IP_USER1>"
 \end{lstlisting}
 
-\imgph{0.7\linewidth}{https://github.com/user-attachments/assets/fa045612-e0ef-4120-9123-b8f47b2144ff}
+\imgph{0.7\linewidth}{imgs/fa045612-e0ef-4120-9123-b8f47b2144ff.png}
 
 \textbf{Apontar o vhost SSL para o certificado/chave e reiniciar Apache:}
 \begin{lstlisting}
@@ -359,14 +359,14 @@ ss -tulpn | grep :443
 \textbf{Resultado esperado:} Apache em estado \textbf{LISTEN} na porta \textbf{443}.
 \end{notebox}
 
-\imgph{0.7\linewidth}{https://github.com/user-attachments/assets/baaaf721-a9ce-4249-8f87-748c2494a942}
+\imgph{0.7\linewidth}{imgs/baaaf721-a9ce-4249-8f87-748c2494a942.png}
 
 \subsubsection*{B) Reiniciar a captura e executar o teste HTTPS --- user 2 - Debian}
 
 No Wireshark, \textbf{reinicie a captura} na interface da \textbf{NAT Network} para registrar somente o tráfego do novo teste.
 
-\imgph{0.6\linewidth}{https://github.com/user-attachments/assets/069ce333-c2a3-46b4-8ada-6343845d21f3}
-\imgph{0.6\linewidth}{https://github.com/user-attachments/assets/e8be4387-047f-4705-a085-4eafb714164f}
+\imgph{0.6\linewidth}{imgs/069ce333-c2a3-46b4-8ada-6343845d21f3.png}
+\imgph{0.6\linewidth}{imgs/e8be4387-047f-4705-a085-4eafb714164f.png}
 
 Execute:
 \begin{lstlisting}
@@ -377,7 +377,7 @@ curl -vk https://<IP_USER1>
 O \texttt{-k} é intencional no laboratório: ele permite seguir com certificado autoassinado. \textbf{Resultado esperado:} a conexão HTTPS deve funcionar mesmo com o certificado autoassinado.
 \end{notebox}
 
-\imgph{0.55\linewidth}{https://github.com/user-attachments/assets/b612937e-31f3-40ec-9cfc-715101247637}
+\imgph{0.55\linewidth}{imgs/b612937e-31f3-40ec-9cfc-715101247637.png}
 
 \subsubsection*{C) Observar no Wireshark}
 
@@ -391,8 +391,8 @@ tls && ip.addr == <IP_USER1>
 \item \textbf{O que observar:} pacotes de \textbf{handshake TLS} (ClientHello/ServerHello/Certificado) e \textbf{payload cifrado}.
 \end{enumerate}
 
-\imgph{0.8\linewidth}{https://github.com/user-attachments/assets/033753e3-daae-4dfd-966a-ce779528bdf9}
-\imgph{0.8\linewidth}{https://github.com/user-attachments/assets/304bdb65-de32-46b1-a97e-19e5b85d3833}
+\imgph{0.8\linewidth}{imgs/033753e3-daae-4dfd-966a-ce779528bdf9.png}
+\imgph{0.8\linewidth}{imgs/304bdb65-de32-46b1-a97e-19e5b85d3833.png}
 
 \begin{notebox}
 \textbf{Ao final deste cenário:} o conteúdo da aplicação não deve aparecer legível no Wireshark; apenas o handshake e os dados criptografados ficam visíveis.

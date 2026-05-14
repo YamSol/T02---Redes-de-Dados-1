@@ -1,4 +1,4 @@
-\input{preamble}
+﻿\input{preamble}
 
 \begin{document}
 
@@ -108,13 +108,13 @@ Se a interface indicada por \texttt{ip route get 1.1.1.1} não for \texttt{enp0s
   \item \textbf{Adapter 1:} \textbf{NAT} (DHCP do VBox)
 \end{itemize}
 
-\imgph{0.65\linewidth}{https://github.com/user-attachments/assets/518f2ddb-4262-4f51-bb8d-7c9dd8cb2e6b}
+\imgph{0.65\linewidth}{imgs/518f2ddb-4262-4f51-bb8d-7c9dd8cb2e6b.png}
 
 \begin{itemize}
   \item \textbf{Recursos da VM:} \textbf{6 GB de RAM} e \textbf{3 núcleos de CPU}
 \end{itemize}
 
-\imgph{0.4\linewidth}{https://github.com/user-attachments/assets/11c305c2-950f-4493-996b-427af0095074}
+\imgph{0.4\linewidth}{imgs/11c305c2-950f-4493-996b-427af0095074.png}
 
 \begin{itemize}
   \item \textbf{Iniciar a VM}
@@ -136,7 +136,7 @@ sudo dhclient "$IFACE"
 ip -4 a show "$IFACE"
 \end{lstlisting}
 
-\imgph{0.6\linewidth}{https://github.com/user-attachments/assets/905455e8-4a02-4a6a-ab2e-5e7f0ebad5d7}
+\imgph{0.6\linewidth}{imgs/905455e8-4a02-4a6a-ab2e-5e7f0ebad5d7.png}
 
 \subsubsection*{B) Validar IP, saída para Internet e interface monitorada}
 
@@ -146,7 +146,7 @@ ping -c2 1.1.1.1        # checar saida para internet
 ip route get 1.1.1.1    # confirmar interface de saida (ex.: enp0s3)
 \end{lstlisting}
 
-\imgph{0.7\linewidth}{https://github.com/user-attachments/assets/50ad173d-5d56-426f-bc52-58c3e6b848a3}
+\imgph{0.7\linewidth}{imgs/50ad173d-5d56-426f-bc52-58c3e6b848a3.png}
 
 \begin{notebox}
 \textbf{Resultado esperado:} a VM apresenta IP coerente com a rede NAT, alcança \texttt{1.1.1.1} e indica a interface de saída usada pelo tráfego observado.
@@ -164,7 +164,7 @@ sudo pkill -x packagekitd || true
 sudo dpkg --configure -a
 \end{lstlisting}
 
-\imgph{0.45\linewidth}{https://github.com/user-attachments/assets/d30e0ae4-9ecf-491a-8501-b15edcc568c7}
+\imgph{0.45\linewidth}{imgs/d30e0ae4-9ecf-491a-8501-b15edcc568c7.png}
 
 \begin{notebox}
 \textbf{Ao final desta etapa:} o sistema deve estar liberado para instalar os pacotes sem conflito de gerenciador.
@@ -176,7 +176,7 @@ sudo dpkg --configure -a
 sudo apt update && sudo apt install -y dnsutils net-tools curl wget suricata tcpdump jq
 \end{lstlisting}
 
-\imgph{0.75\linewidth}{https://github.com/user-attachments/assets/4ea2ec37-be75-4134-965c-24403e454204}
+\imgph{0.75\linewidth}{imgs/4ea2ec37-be75-4134-965c-24403e454204.png}
 
 \begin{notebox}
 \textbf{Ao final desta etapa:} todas as ferramentas para gerar tráfego, monitorar a rede e consultar alertas devem estar instaladas.
@@ -208,7 +208,7 @@ alert udp any any -> any 53 (msg:"CUSTOM BROWSER - DNS query trigger"; dns.query
 RULES
 \end{lstlisting}
 
-\imgph{0.85\linewidth}{https://github.com/user-attachments/assets/5ab11d4f-11c8-4de4-ac55-a93533803b58}
+\imgph{0.85\linewidth}{imgs/5ab11d4f-11c8-4de4-ac55-a93533803b58.png}
 
 \subsubsection*{C) Validar a sintaxe das regras}
 
@@ -217,7 +217,7 @@ sudo suricata -T -S /etc/suricata/rules/local.rules -v
 # esperado: "4 rules successfully loaded, 0 failed"
 \end{lstlisting}
 
-\imgph{0.85\linewidth}{https://github.com/user-attachments/assets/480cb59f-ded9-49f3-bfbf-3d3b8d5fdedb}
+\imgph{0.85\linewidth}{imgs/480cb59f-ded9-49f3-bfbf-3d3b8d5fdedb.png}
 
 \begin{notebox}
 \textbf{Ao final desta etapa:} o arquivo de regras deve existir e o Suricata deve confirmar o carregamento das \textbf{4 regras locais}.
@@ -245,7 +245,7 @@ ps aux | grep '[s]uricata'
 sudo tail -n 15 /var/log/suricata/suricata.log
 \end{lstlisting}
 
-\imgph{0.85\linewidth}{https://github.com/user-attachments/assets/bb721063-caf0-46e3-947c-1a2e5157cdea}
+\imgph{0.85\linewidth}{imgs/bb721063-caf0-46e3-947c-1a2e5157cdea.png}
 
 \subsubsection*{B) Confirmar onde os alertas serão acompanhados}
 
@@ -273,7 +273,7 @@ sudo tail -n 15 /var/log/suricata/suricata.log
 
 \textbf{Terminal A:} \texttt{tail -f /var/log/suricata/fast.log}
 
-\imgph{0.5\linewidth}{https://github.com/user-attachments/assets/f7e2bad4-8a20-4919-979f-dd084d40962b}
+\imgph{0.5\linewidth}{imgs/f7e2bad4-8a20-4919-979f-dd084d40962b.png}
 
 \textbf{Terminal B} (caso optar por testar usando \texttt{curl} diretamente no terminal): comandos de disparo abaixo. Dica: force IPv4 com \texttt{-4}.
 
@@ -292,7 +292,7 @@ curl -4 -s 'http://neverssl.com/SURICATA_BROWSER_URI_01' >/dev/null
   \item Caso demore para executar ou alertar, aguarde. Este comportamento é esperado.
 \end{itemize}
 
-\imgph{0.95\linewidth}{https://github.com/user-attachments/assets/75343aec-013b-4504-be75-92acb3f86fa6}
+\imgph{0.95\linewidth}{imgs/75343aec-013b-4504-be75-92acb3f86fa6.png}
 
 \subsubsection*{B) Observar o alerta no log}
 
@@ -314,7 +314,7 @@ curl -4 -s -X POST -d 'SURICATA_BROWSER_BODY_02' 'http://neverssl.com/' >/dev/nu
 # curl -4 -v -X POST -d 'SURICATA_BROWSER_BODY_02' 'http://neverssl.com/' >/dev/null
 \end{lstlisting}
 
-\imgph{0.95\linewidth}{https://github.com/user-attachments/assets/24087409-8c8b-4a65-b4f8-8fe91cf8ccb7}
+\imgph{0.95\linewidth}{imgs/24087409-8c8b-4a65-b4f8-8fe91cf8ccb7.png}
 
 \subsubsection*{B) Observar o alerta no log}
 
@@ -336,7 +336,7 @@ curl -4 -s -H 'X-Trigger-Lab: 1' 'http://neverssl.com/' >/dev/null
 # curl -4 -v -H 'X-Trigger-Lab: 1' 'http://neverssl.com/' >/dev/null
 \end{lstlisting}
 
-\imgph{0.95\linewidth}{https://github.com/user-attachments/assets/6f87fb49-cc08-4880-9b18-6cc2c3657e72}
+\imgph{0.95\linewidth}{imgs/6f87fb49-cc08-4880-9b18-6cc2c3657e72.png}
 
 \subsubsection*{B) Observar o alerta no log}
 
@@ -353,7 +353,7 @@ dig +short suricata-trigger-lab.example >/dev/null
 # ou navegador: http://suricata-trigger-lab.example/
 \end{lstlisting}
 
-\imgph{0.95\linewidth}{https://github.com/user-attachments/assets/5cb962e1-b239-4938-ac74-6255a2d782f4}
+\imgph{0.95\linewidth}{imgs/5cb962e1-b239-4938-ac74-6255a2d782f4.png}
 
 \subsubsection*{B) Observar o alerta no log}
 
@@ -393,7 +393,7 @@ jq -r 'select(.event_type=="alert") | "\(.timestamp) SID=\(.alert.signature_id) 
   /var/log/suricata/eve.json | tail -n 10
 \end{lstlisting}
 
-\imgph{0.95\linewidth}{https://github.com/user-attachments/assets/8cbeaf01-02c1-49a8-9517-e756fd0f9a29}
+\imgph{0.95\linewidth}{imgs/8cbeaf01-02c1-49a8-9517-e756fd0f9a29.png}
 
 \section{Conclusão}
 

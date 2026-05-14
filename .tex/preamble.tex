@@ -96,12 +96,11 @@
   fonttitle=\bfseries
 }
 
-% Placeholder para imagens remotas (GitHub user-attachments)
-% Uso: \imgph{largura}{URL ou descrição}
+% Imagem local
+% Uso: \imgph{largura}{caminho}
 \newcommand{\imgph}[2]{%
   \begin{figure}[H]\centering
-    \fbox{\parbox[c][3.2cm][c]{#1}{\centering\footnotesize\itshape%
-      \textcolor{codecom}{[imagem]} \\ \tiny\url{#2}}}%
+    \includegraphics[width=#1]{#2}%
   \end{figure}
 }
 
