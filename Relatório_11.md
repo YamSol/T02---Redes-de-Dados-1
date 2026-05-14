@@ -126,7 +126,19 @@ sudo ifdown <interface> || true
 sudo ifup <interface>
 ```
 
-#### B) Renovar lease DHCP diretamente pela interface ativa
+#### B) Validar IP, saída para Internet e interface monitorada
+
+```bash
+ip a                    # deve obter IP 10.0.2.x (NAT do VBox)
+ping -c2 1.1.1.1        # checar saída para internet
+ip route get 1.1.1.1    # confirmar interface de saída (ex.: enp0s3)
+```
+
+<img width="1052" height="538" alt="image" src="https://github.com/user-attachments/assets/50ad173d-5d56-426f-bc52-58c3e6b848a3" />
+
+> **Resultado esperado:** a VM deve apresentar um IP coerente com a rede NAT do VirtualBox, alcançar `1.1.1.1` e indicar a interface de saída usada pelo tráfego observado no laboratório.
+
+#### C) (Opcional) Caso necessário, existe a alternativa abaixo para obter ip automático
 
 ```bash
 IFACE=$(ip route | awk '/default/ {print $5; exit}')
@@ -138,17 +150,6 @@ ip -4 a show "$IFACE"
 
 <img width="726" height="235" alt="image" src="https://github.com/user-attachments/assets/905455e8-4a02-4a6a-ab2e-5e7f0ebad5d7" />
 
-#### C) Validar IP, saída para Internet e interface monitorada
-
-```bash
-ip a                    # deve obter IP 10.0.2.x (NAT do VBox)
-ping -c2 1.1.1.1        # checar saída para internet
-ip route get 1.1.1.1    # confirmar interface de saída (ex.: enp0s3)
-```
-
-<img width="1052" height="538" alt="image" src="https://github.com/user-attachments/assets/50ad173d-5d56-426f-bc52-58c3e6b848a3" />
-
-> **Resultado esperado:** a VM deve apresentar um IP coerente com a rede NAT do VirtualBox, alcançar `1.1.1.1` e indicar a interface de saída usada pelo tráfego observado no laboratório.
 
 > **Ao final desta etapa:** a conectividade externa e a interface de monitoramento devem estar confirmadas antes da instalação do Suricata.
 
