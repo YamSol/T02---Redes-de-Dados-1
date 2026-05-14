@@ -110,15 +110,38 @@ O TLS cria um canal cifrado sobre TCP por meio do *handshake*, com negociação 
 
 > **Ao final desta etapa:** as duas VMs devem estar ligadas, vinculadas à `NatNetwork` e prontas para receber IP via DHCP.
 
-### 2) Conferir IPs e validar a comunicação
+### 2) Conferir IPs, padronizar DHCP e validar a comunicação
 
-1. Em **cada VM Debian**, execute:
+1. Em **cada VM Debian**, identifique a interface de rede e, se necessário, force a configuração por **DHCP** no arquivo de interfaces:
+
+   ```bash
+   ip link show
+   sudo nano /etc/network/interfaces
+   ```
+
+   Use o modelo abaixo (substitua `<interface>` pelo nome real, por exemplo `enp0s3`):
+
+   ```text
+   auto lo
+   iface lo inet loopback
+
+   auto <interface>
+   iface <interface> inet dhcp
+   ```
+
+   Em seguida, recarregue a interface:
+
+   ```bash
+   sudo ifdown <interface> ; sudo ifup <interface>
+   ```
+
+2. Em **cada VM Debian**, execute:
 
    ```bash
    ip a
    ```
 
-2. Identifique o endereço IPv4 usado na interface conectada à **`NatNetwork`** e verifique se os IPs de **user 1 - Debian** e **user 2 - Debian** pertencem à **mesma faixa de rede** configurada no VirtualBox.
+3. Identifique o endereço IPv4 usado na interface conectada à **`NatNetwork`** e verifique se os IPs de **user 1 - Debian** e **user 2 - Debian** pertencem à **mesma faixa de rede** configurada no VirtualBox.
 
    * Exemplo: se a `NatNetwork` estiver em `10.0.2.0/24`, os dois IPs devem seguir o padrão `10.0.2.x/24`.
    * Anote o IP do servidor como **`<IP_USER1>`** e o IP do cliente como **`<IP_USER2>`**.
@@ -127,9 +150,9 @@ O TLS cria um canal cifrado sobre TCP por meio do *handshake*, com negociação 
 
    > **Anote antes de seguir:** todos os comandos posteriores usam esses dois valores. Se necessário, mantenha os IPs anotados em separado durante a execução do laboratório.
 
-3. **Se os IPs estiverem compatíveis**, avance para o teste de comunicação.
+4. **Se os IPs estiverem compatíveis**, avance para o teste de comunicação.
 
-4. **Se os IPs não estiverem na mesma rede**, ou se alguma VM não tiver recebido um IPv4 válido da **`NatNetwork`**, execute em **cada VM Debian**:
+5. **Se os IPs não estiverem na mesma rede**, ou se alguma VM não tiver recebido um IPv4 válido da **`NatNetwork`**, execute em **cada VM Debian**:
 
    ```bash
    IFACE=$(ip route | awk '/default/ {print $5; exit}')
@@ -143,7 +166,7 @@ O TLS cria um canal cifrado sobre TCP por meio do *handshake*, com negociação 
 
    Após isso, execute novamente `ip a` nas duas VMs e confirme se os endereços agora estão na mesma faixa de rede.
 
-5. **Testar comunicação entre as VMs com `ping`:**
+6. **Testar comunicação entre as VMs com `ping`:**
 
    No **user 2 - Debian**, execute:
 

@@ -102,6 +102,31 @@ Um IDS de rede opera de forma passiva: observa os pacotes, aplica assinaturas/re
 
 #### A) Padronizar a interface em DHCP
 
+Se quiser garantir a configuração DHCP pela forma mais geral no Debian, configure o arquivo de interfaces:
+
+```bash
+ip link show
+sudo nano /etc/network/interfaces
+```
+
+Use o modelo abaixo (substitua `<interface>` pelo nome real, por exemplo `enp0s3`):
+
+```text
+auto lo
+iface lo inet loopback
+
+auto <interface>
+iface <interface> inet dhcp
+```
+
+Depois recarregue a interface:
+
+```bash
+sudo ifdown <interface> ; sudo ifup <interface>
+```
+
+#### B) Renovar lease DHCP diretamente pela interface ativa
+
 ```bash
 IFACE=$(ip route | awk '/default/ {print $5; exit}')
 sudo dhclient -r "$IFACE" || true
@@ -112,7 +137,7 @@ ip -4 a show "$IFACE"
 
 <img width="726" height="235" alt="image" src="https://github.com/user-attachments/assets/905455e8-4a02-4a6a-ab2e-5e7f0ebad5d7" />
 
-#### B) Validar IP, saída para Internet e interface monitorada
+#### C) Validar IP, saída para Internet e interface monitorada
 
 ```bash
 ip a                    # deve obter IP 10.0.2.x (NAT do VBox)
