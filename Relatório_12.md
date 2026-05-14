@@ -282,7 +282,6 @@ Inicie a VM **Debian**.
 
 ## V. Procedimentos (Passo a Passo)
 
-> [!IMPORTANT] Aviso
 > No pfSense, vá em **Firewall > Rules > LAN**. As regras são lidas **de cima para baixo**. Coloque as **regras de bloqueio acima** da regra “allow LAN to any”.
 
 ### Checklist antes dos testes
