@@ -404,7 +404,8 @@ Abra, no menu: **Firewall > Rules > LAN → Add (seta para cima)**. Preencha com
 2. Selecione os filtros para interface (`LAN`).
 3. Verifique entradas **blocked** cujo **Destination** é um dos IPs resolvidos para `www.wikipedia.org`.
 
-   <img width="800" alt="Logs bloqueio Wikipedia" src="https://github.com/user-attachments/assets/877268a9-d1a6-4ca5-b764-81563bcbff0f" />
+   <img width="800" alt="Logs bloqueio Wikipedia" src="https://github.com/user-attachments/assets/5a0083c6-1178-484b-9cc0-2c24c3851bcb" />
+
 
 
 > **Dica:** Para visualizar a regra é possível limpar os logs anteriores. Na barra `Status /System Logs / Firewall / Normal View`, selecione Configurar (`Manage Log`, icone de ferramenta) e **Clear log**. Repita o teste.
