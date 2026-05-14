@@ -136,8 +136,7 @@ Use este ajuste em **cada VM Debian** quando ela estiver sem IPv4 válido, fora 
    Em seguida, recarregue a interface:
 
    ```bash
-   sudo ifdown <interface> || true
-   sudo ifup <interface>
+   sudo ifdown <interface>; sudo ifup <interface>
    ```
 
 #### B) Conferir IPs e validar comunicação
@@ -149,10 +148,7 @@ Use este ajuste em **cada VM Debian** quando ela estiver sem IPv4 válido, fora 
    ```
 
 2. Identifique o endereço IPv4 usado na interface conectada à **`NatNetwork`**.
-   Verifique se os IPs de **user 1 - Debian** e **user 2 - Debian** pertencem à **mesma faixa de rede** configurada no VirtualBox:
-   ```bash
-   ip a
-   ```
+   Verifique se os IPs de **user 1 - Debian** e **user 2 - Debian** pertencem à **mesma faixa de rede** configurada no VirtualBox.
    * Exemplo: se a `NatNetwork` estiver em `10.0.2.0/24`, os dois IPs devem seguir o padrão `10.0.2.x/24`.
    * Anote o IP do servidor como **`<IP_USER1>`** e o IP do cliente como **`<IP_USER2>`**.
 
