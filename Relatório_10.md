@@ -110,7 +110,36 @@ O TLS cria um canal cifrado sobre TCP por meio do *handshake*, com negociação 
 
 > **Ao final desta etapa:** as duas VMs devem estar ligadas, vinculadas à `NatNetwork` e prontas para receber IP via DHCP.
 
-### 2) Conferir IPs e validar a comunicação
+### 2) Conferir IPs, padronizar DHCP e validar a comunicação
+
+#### A) (Opcional) Forçar DHCP no Debian
+
+Use este ajuste em **cada VM Debian** quando ela estiver sem IPv4 válido, fora da faixa da `NatNetwork` ou com configuração estática antiga.
+
+1. Identifique a interface de rede e abra o arquivo de interfaces:
+
+   ```bash
+   ip link show
+   sudo nano /etc/network/interfaces
+   ```
+
+   Use o modelo abaixo (substitua `<interface>` pelo nome real, por exemplo `enp0s3`):
+
+   ```text
+   auto lo
+   iface lo inet loopback
+
+   auto <interface>
+   iface <interface> inet dhcp
+   ```
+
+   Em seguida, recarregue a interface:
+
+   ```bash
+   sudo ifdown <interface>; sudo ifup <interface>
+   ```
+
+#### B) Conferir IPs e validar comunicação
 
 1. Em **cada VM Debian**, execute:
 
@@ -118,30 +147,14 @@ O TLS cria um canal cifrado sobre TCP por meio do *handshake*, com negociação 
    ip a
    ```
 
-2. Identifique o endereço IPv4 usado na interface conectada à **`NatNetwork`** e verifique se os IPs de **user 1 - Debian** e **user 2 - Debian** pertencem à **mesma faixa de rede** configurada no VirtualBox.
-
+2. Identifique o endereço IPv4 usado na interface conectada à **`NatNetwork`**.
+   Verifique se os IPs de **user 1 - Debian** e **user 2 - Debian** pertencem à **mesma faixa de rede** configurada no VirtualBox.
    * Exemplo: se a `NatNetwork` estiver em `10.0.2.0/24`, os dois IPs devem seguir o padrão `10.0.2.x/24`.
    * Anote o IP do servidor como **`<IP_USER1>`** e o IP do cliente como **`<IP_USER2>`**.
 
   <img width="1481" height="445" alt="image" src="https://github.com/user-attachments/assets/70c2e67a-184a-487b-a232-36a1759252e1" />
 
    > **Anote antes de seguir:** todos os comandos posteriores usam esses dois valores. Se necessário, mantenha os IPs anotados em separado durante a execução do laboratório.
-
-3. **Se os IPs estiverem compatíveis**, avance para o teste de comunicação.
-
-4. **Se os IPs não estiverem na mesma rede**, ou se alguma VM não tiver recebido um IPv4 válido da **`NatNetwork`**, execute em **cada VM Debian**:
-
-   ```bash
-   IFACE=$(ip route | awk '/default/ {print $5; exit}')
-   sudo dhclient -r "$IFACE" || true
-   sudo ip addr flush dev "$IFACE"
-   sudo dhclient "$IFACE"
-   ip -4 a show "$IFACE"
-   ```
-
-   > **Nota:** a interface padrão em Debian no VirtualBox é normalmente **`enp0s3`** (Ethernet, barramento 0, slot 3). Se precisar verificar ou consultar manualmente, execute `ip route` ou `ip a` para confirmar qual interface está ativa.
-
-   Após isso, execute novamente `ip a` nas duas VMs e confirme se os endereços agora estão na mesma faixa de rede.
 
 5. **Testar comunicação entre as VMs com `ping`:**
 
@@ -394,7 +407,7 @@ Foi demonstrado, de forma prática, que a adoção de **TLS** em HTTP protege a 
 
 ---
 
-## Apêndice — Troubleshooting rápido
+## Apêndice 1 — Troubleshooting rápido
 
 * **Não vejo tráfego no Wireshark:** selecione a interface da NAT Network correta e gere tráfego com `curl` no user 2 - Debian.
 * **HTTPS não sobe:** confirme `a2enmod ssl`, `a2ensite default-ssl`, caminhos de certificado no `default-ssl.conf` e reinício do Apache.
@@ -402,3 +415,38 @@ Foi demonstrado, de forma prática, que a adoção de **TLS** em HTTP protege a 
 * **`ping` entre as VMs falha:** confirme que ambas estão em **NAT Network (`NatNetwork`)**, que os dois IPs estão na mesma faixa de rede e que o teste usa o endereço correto de destino.
 * **VMs não se enxergam:** confirme ambas em **NAT Network (`NatNetwork`)** com DHCP ON.
 * **Wireshark não abre ou não captura corretamente:** execute novamente com `sudo wireshark` e confirme que a interface da NAT Network foi selecionada.
+
+
+## Apêndice 2 — Tela preta ao carregar a interface gráfica no Debian (VirtualBox)
+
+O Debian moderno utiliza **Wayland** como servidor gráfico padrão, que pode ser incompatível com as controladoras de vídeo virtuais do VirtualBox — a tela fica escura logo após o carregamento dos serviços, impedindo o login gráfico.
+
+**Solução: forçar o uso do Xorg.** Quando a tela ficar escura, pressione **Ctrl + Alt + F2** para abrir um terminal em modo texto, faça login e execute:
+```bash
+sudo nano /etc/gdm3/daemon.conf
+```
+Localize a linha `#WaylandEnable=false`, remova o `#` e salve. Depois reinicie:
+```bash
+sudo reboot
+```
+
+Se o problema persistir, desligue a VM, acesse **Configurações > Tela** no VirtualBox e verifique:
+- Controladora gráfica: **VMSVGA**
+- **Aceleração 3D desativada**
+- Memória de vídeo no máximo disponível
+
+## Apêndice 3 — Instalar VirtualBox Guest Additions
+
+<img width="800" alt="Menu inserir imagem de CD" src="https://github.com/user-attachments/assets/0cc26f4a-24ca-46d9-a223-7b166946d40c" />
+
+1. No menu superior, selecione **Dispositivo** e **"Inserir imagem de CD..."**.
+
+<img width="800" alt="Files executar software Guest Additions" src="https://github.com/user-attachments/assets/59e7f49e-7b79-4c0e-a8b0-054232919920" />
+
+2. Na máquina virtual, abra **Files**, selecione o disco **"Vbox..."** e clique em **"Run Software"**. Quando perguntado, selecione **"Run"** e insira a senha.
+
+<img width="800" alt="Terminal Guest Additions conclusão" src="https://github.com/user-attachments/assets/f5f77df6-697c-4292-9222-b5241002e48f" />
+
+3. Aguarde até a mensagem **"press Return to close this window"**. Pressione **Enter**. No **Files**, desmonte o disco. No menu, selecione **"Máquina"** → **"Reiniciar"** para reiniciar a máquina virtual.
+
+A operação deve ter sido finalizada com sucesso.
