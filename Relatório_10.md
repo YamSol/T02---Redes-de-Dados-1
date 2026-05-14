@@ -61,6 +61,10 @@ O TLS cria um canal cifrado sobre TCP por meio do *handshake*, com negociação 
 * **user 1 - Debian:** `apache2`, `openssl`
 * **user 2 - Debian:** `curl`, `wireshark`
 
+### 4) Guia auxiliar de VirtualBox
+
+> Se não estiver conseguindo copiar e colar comandos entre o computador host e a VM, redimensionar a tela corretamente ou usar melhor a integração com o VirtualBox, consulte o guia [VirtualBox_Guest_Additions.md](./VirtualBox_Guest_Additions.md) para instalar o **VirtualBox Guest Additions**.
+
 ---
 
 ## IV. Instalação e Preparação

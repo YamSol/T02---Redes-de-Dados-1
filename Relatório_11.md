@@ -75,6 +75,10 @@ Um IDS de rede opera de forma passiva: observa os pacotes, aplica assinaturas/re
 * `dnsutils`, `net-tools`, `curl`, `wget`
 * `suricata`, `tcpdump`, `jq`
 
+### 4) Guia auxiliar de VirtualBox
+
+> Se não estiver conseguindo copiar e colar comandos entre o computador host e a VM, redimensionar a tela corretamente ou usar melhor a integração com o VirtualBox, consulte o guia [VirtualBox_Guest_Additions.md](./VirtualBox_Guest_Additions.md) para instalar o **VirtualBox Guest Additions**.
+
 ---
 
 ## IV. Instalação e Preparação

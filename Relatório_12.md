@@ -81,6 +81,10 @@ Aplicaremos **regras** (ex.: **bloquear HTTP**, **bloquear um site específico**
 * **VM-pfSense:** nenhum pacote adicional — configuração feita pelo CLI e pela WebGUI.
 * **VM-Debian:** `net-tools`, `dnsutils`, `curl`
 
+### 4) Guia auxiliar de VirtualBox
+
+> Se não estiver conseguindo copiar e colar comandos entre o computador host e a VM, redimensionar a tela corretamente ou usar melhor a integração com o VirtualBox, consulte o guia [VirtualBox_Guest_Additions.md](./VirtualBox_Guest_Additions.md) para instalar o **VirtualBox Guest Additions**.
+
 ---
 
 ## IV. Instalação e Preparação
@@ -524,18 +528,3 @@ Se o problema persistir, desligue a VM, acesse **Configurações > Tela** no Vir
 - **Aceleração 3D desativada**
 - Memória de vídeo no máximo disponível
 
-## Apêndice 3 — Instalar VirtualBox Guest Additions
-
-<img width="800" alt="Menu inserir imagem de CD" src="https://github.com/user-attachments/assets/0cc26f4a-24ca-46d9-a223-7b166946d40c" />
-
-1. No menu superior, selecione **Dispositivo** e **"Inserir imagem de CD..."**.
-
-<img width="800" alt="Files executar software Guest Additions" src="https://github.com/user-attachments/assets/59e7f49e-7b79-4c0e-a8b0-054232919920" />
-
-2. Na máquina virtual, abra **Files**, selecione o disco **"Vbox..."** e clique em **"Run Software"**. Quando perguntado, selecione **"Run"** e insira a senha.
-
-<img width="800" alt="Terminal Guest Additions conclusão" src="https://github.com/user-attachments/assets/f5f77df6-697c-4292-9222-b5241002e48f" />
-
-3. Aguarde até a mensagem **"press Return to close this window"**. Pressione **Enter**. No **Files**, desmonte o disco. No menu, selecione **"Máquina"** → **"Reiniciar"** para reiniciar a máquina virtual.
-
-A operação deve ter sido finalizada com sucesso.
