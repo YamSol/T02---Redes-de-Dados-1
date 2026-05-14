@@ -524,3 +524,19 @@ Se o problema persistir, desligue a VM, acesse **Configurações > Tela** no Vir
 - Controladora gráfica: **VMSVGA**
 - **Aceleração 3D desativada**
 - Memória de vídeo no máximo disponível
+
+## Apêndice 3 — Instalar VirtualBox Guest Additions
+
+<img width="800" alt="Menu inserir imagem de CD" src="placeholder_000" />
+
+1. No menu superior, selecione **Dispositivo** e **"Inserir imagem de CD..."**.
+
+<img width="800" alt="Files executar software Guest Additions" src="placeholder_001" />
+
+2. Na máquina virtual, abra **Files**, selecione o disco **"Vbox..."** e clique em **"Run Software"**. Quando perguntado, selecione **"Run"** e insira a senha.
+
+<img width="800" alt="Terminal Guest Additions conclusão" src="placeholder_002" />
+
+3. Aguarde até a mensagem **"press Return to close this window"**. Pressione **Enter**. No **Files**, desmonte o disco. No menu, selecione **"Máquina"** → **"Reiniciar"** para reiniciar a máquina virtual.
+
+A operação deve ter sido finalizada com sucesso.
