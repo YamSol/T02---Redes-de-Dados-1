@@ -1,4 +1,4 @@
-﻿<img width="180" alt="image" src=".tex/imgs/cf68b22b-ecb8-4e9e-8f09-271ef1bc1246.png" />
+﻿<img width="180" alt="image" src="latex/imgs/cf68b22b-ecb8-4e9e-8f09-271ef1bc1246.png" />
 
 <div align="right">
 T02 - Redes de Dados
@@ -91,11 +91,11 @@ Um IDS de rede opera de forma passiva: observa os pacotes, aplica assinaturas/re
 * **VM:** `user 1 - Debian`
 * **Adapter 1:** **NAT** (DHCP do VirtualBox)
 
-<img width="800" height="372" alt="image" src=".tex/imgs/518f2ddb-4262-4f51-bb8d-7c9dd8cb2e6b.png" />
+<img width="800" height="372" alt="image" src="latex/imgs/518f2ddb-4262-4f51-bb8d-7c9dd8cb2e6b.png" />
 
 * **Recursos da VM:** **6 GB de RAM** e **3 núcleos de CPU**
 
-<img width="462" height="126" alt="image" src=".tex/imgs/11c305c2-950f-4493-996b-427af0095074.png" />
+<img width="462" height="126" alt="image" src="latex/imgs/11c305c2-950f-4493-996b-427af0095074.png" />
 
 
 * **Iniciar a VM**
@@ -114,7 +114,7 @@ sudo dhclient "$IFACE"
 ip -4 a show "$IFACE"
 ```
 
-<img width="726" height="235" alt="image" src=".tex/imgs/905455e8-4a02-4a6a-ab2e-5e7f0ebad5d7.png" />
+<img width="726" height="235" alt="image" src="latex/imgs/905455e8-4a02-4a6a-ab2e-5e7f0ebad5d7.png" />
 
 #### B) Validar IP, saída para Internet e interface monitorada
 
@@ -124,7 +124,7 @@ ping -c2 1.1.1.1        # checar saída para internet
 ip route get 1.1.1.1    # confirmar interface de saída (ex.: enp0s3)
 ```
 
-<img width="1052" height="538" alt="image" src=".tex/imgs/50ad173d-5d56-426f-bc52-58c3e6b848a3.png" />
+<img width="1052" height="538" alt="image" src="latex/imgs/50ad173d-5d56-426f-bc52-58c3e6b848a3.png" />
 
 > **Resultado esperado:** a VM deve apresentar um IP coerente com a rede NAT do VirtualBox, alcançar `1.1.1.1` e indicar a interface de saída usada pelo tráfego observado no laboratório.
 
@@ -140,7 +140,7 @@ sudo pkill -x packagekitd || true
 sudo dpkg --configure -a
 ```
 
-<img width="488" height="87" alt="image" src=".tex/imgs/d30e0ae4-9ecf-491a-8501-b15edcc568c7.png" />
+<img width="488" height="87" alt="image" src="latex/imgs/d30e0ae4-9ecf-491a-8501-b15edcc568c7.png" />
 
 > **Ao final desta etapa:** o sistema deve estar liberado para instalar os pacotes do laboratório sem conflito de gerenciador de pacotes.
 
@@ -150,7 +150,7 @@ sudo dpkg --configure -a
 sudo apt update && sudo apt install -y dnsutils net-tools curl wget suricata tcpdump jq
 ```
 
-<img width="913" height="425" alt="image" src=".tex/imgs/4ea2ec37-be75-4134-965c-24403e454204.png" />
+<img width="913" height="425" alt="image" src="latex/imgs/4ea2ec37-be75-4134-965c-24403e454204.png" />
 
 > **Ao final desta etapa:** todas as ferramentas necessárias para gerar tráfego, monitorar a rede e consultar alertas devem estar instaladas.
 
@@ -178,7 +178,7 @@ alert udp any any -> any 53 (msg:"CUSTOM BROWSER - DNS query trigger"; dns.query
 RULES
 ```
 
-<img width="1106" height="233" alt="image" src=".tex/imgs/5ab11d4f-11c8-4de4-ac55-a93533803b58.png" />
+<img width="1106" height="233" alt="image" src="latex/imgs/5ab11d4f-11c8-4de4-ac55-a93533803b58.png" />
 
 #### C) Validar a sintaxe das regras
 
@@ -187,7 +187,7 @@ sudo suricata -T -S /etc/suricata/rules/local.rules -v
 # esperado: "4 rules successfully loaded, 0 failed"
 ```
 
-<img width="1178" height="391" alt="image" src=".tex/imgs/480cb59f-ded9-49f3-bfbf-3d3b8d5fdedb.png" />
+<img width="1178" height="391" alt="image" src="latex/imgs/480cb59f-ded9-49f3-bfbf-3d3b8d5fdedb.png" />
 
 > **Ao final desta etapa:** o arquivo de regras deve existir e o Suricata deve confirmar o carregamento correto das **4 regras locais**.
 
@@ -212,7 +212,7 @@ ps aux | grep '[s]uricata'
 sudo tail -n 15 /var/log/suricata/suricata.log
 ```
 
-<img width="1176" height="677" alt="image" src=".tex/imgs/bb721063-caf0-46e3-947c-1a2e5157cdea.png" />
+<img width="1176" height="677" alt="image" src="latex/imgs/bb721063-caf0-46e3-947c-1a2e5157cdea.png" />
 
 #### B) Confirmar onde os alertas serão acompanhados
 
@@ -242,7 +242,7 @@ Abra dois terminais:
 
 **Terminal A:** `tail -f /var/log/suricata/fast.log`
 
-<img width="611" height="91" alt="image" src=".tex/imgs/f7e2bad4-8a20-4919-979f-dd084d40962b.png" />
+<img width="611" height="91" alt="image" src="latex/imgs/f7e2bad4-8a20-4919-979f-dd084d40962b.png" />
 
 **Terminal B (caso optar por testar usando `curl` diretamente no terminal):** comandos de disparo (abaixo). Dica: force IPv4 com `-4`.
 
@@ -259,7 +259,7 @@ curl -4 -s 'http://neverssl.com/SURICATA_BROWSER_URI_01' >/dev/null
 
 * Caso demore para executar ou alertar, aguarde. Este comportamento é esperado.
 
-<img width="1785" height="207" alt="image" src=".tex/imgs/75343aec-013b-4504-be75-92acb3f86fa6.png" />
+<img width="1785" height="207" alt="image" src="latex/imgs/75343aec-013b-4504-be75-92acb3f86fa6.png" />
 
 #### B) Observar o alerta no log
 
@@ -283,7 +283,7 @@ curl -4 -s -X POST -d 'SURICATA_BROWSER_BODY_02' 'http://neverssl.com/' >/dev/nu
 
 * Caso demore para executar ou alertar, aguarde. Este comportamento é esperado.
 
-<img width="1785" height="218" alt="image" src=".tex/imgs/24087409-8c8b-4a65-b4f8-8fe91cf8ccb7.png" />
+<img width="1785" height="218" alt="image" src="latex/imgs/24087409-8c8b-4a65-b4f8-8fe91cf8ccb7.png" />
 
 #### B) Observar o alerta no log
 
@@ -308,7 +308,7 @@ curl -4 -s -H 'X-Trigger-Lab: 1' 'http://neverssl.com/' >/dev/null
 
 * Caso demore para executar ou alertar, aguarde. Este comportamento é esperado.
 
-<img width="1782" height="256" alt="image" src=".tex/imgs/6f87fb49-cc08-4880-9b18-6cc2c3657e72.png" />
+<img width="1782" height="256" alt="image" src="latex/imgs/6f87fb49-cc08-4880-9b18-6cc2c3657e72.png" />
 
 #### B) Observar o alerta no log
 
@@ -332,7 +332,7 @@ dig +short suricata-trigger-lab.example >/dev/null
 
 * Caso demore para executar ou alertar, aguarde. Este comportamento é esperado.
 
-<img width="1777" height="287" alt="image" src=".tex/imgs/5cb962e1-b239-4938-ac74-6255a2d782f4.png" />
+<img width="1777" height="287" alt="image" src="latex/imgs/5cb962e1-b239-4938-ac74-6255a2d782f4.png" />
 
 #### B) Observar o alerta no log
 
@@ -374,7 +374,7 @@ jq -r 'select(.event_type=="alert") | "\(.timestamp) SID=\(.alert.signature_id) 
 > Use esta coleta rápida ao final dos cenários para consolidar a evidência dos alertas em formato textual ou JSON.
 
 
-<img width="1900" height="338" alt="image" src=".tex/imgs/8cbeaf01-02c1-49a8-9517-e756fd0f9a29.png" />
+<img width="1900" height="338" alt="image" src="latex/imgs/8cbeaf01-02c1-49a8-9517-e756fd0f9a29.png" />
 
 ---
 

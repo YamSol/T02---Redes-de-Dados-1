@@ -1,4 +1,4 @@
-﻿<img width="180" alt="image" src=".tex/imgs/cf68b22b-ecb8-4e9e-8f09-271ef1bc1246.png" />
+﻿<img width="180" alt="image" src="latex/imgs/cf68b22b-ecb8-4e9e-8f09-271ef1bc1246.png" />
 
 <div align="right">
 T02 - Redes de Dados
@@ -14,15 +14,15 @@ Este guia mostra como instalar o **VirtualBox Guest Additions** em uma VM Debian
 
 Com a VM ligada e a interface gráfica do Debian aberta, acesse o menu superior da janela do VirtualBox:
 
-<img width="800" alt="Menu inserir imagem de CD" src=".tex/imgs/0cc26f4a-24ca-46d9-a223-7b166946d40c.png" />
+<img width="800" alt="Menu inserir imagem de CD" src="latex/imgs/0cc26f4a-24ca-46d9-a223-7b166946d40c.png" />
 
 1. No menu superior da janela da VM, selecione **Dispositivo** e **"Inserir imagem de CD..."**.
 
-<img width="800" alt="Files executar software Guest Additions" src=".tex/imgs/59e7f49e-7b79-4c0e-a8b0-054232919920.png" />
+<img width="800" alt="Files executar software Guest Additions" src="latex/imgs/59e7f49e-7b79-4c0e-a8b0-054232919920.png" />
 
 2. Na máquina virtual, abra **Files**, selecione o disco **"Vbox..."** e clique em **"Run Software"**. Quando perguntado, selecione **"Run"** e insira a senha.
 
-<img width="800" alt="Terminal Guest Additions conclusão" src=".tex/imgs/f5f77df6-697c-4292-9222-b5241002e48f.png" />
+<img width="800" alt="Terminal Guest Additions conclusão" src="latex/imgs/f5f77df6-697c-4292-9222-b5241002e48f.png" />
 
 3. Aguarde até a mensagem **"press Return to close this window"**. Pressione **Enter**. No **Files**, desmonte o disco. No menu, selecione **"Máquina"** → **"Reiniciar"** para reiniciar a máquina virtual.
 

@@ -8,12 +8,12 @@ Ferramenta necessaria: [https://miktex.org/download](https://miktex.org/download
 
 No windows, procure por "environment", e selecione "Edit Environment Variables for your account". Na seção "User variables", selecione a variável "Path" e clique em "Edit". Clique em "New" e adicione o caminho para a pasta onde o MiKTeX foi instalado, por exemplo: `C:\Program Files\MiKTeX 2.9\miktex\bin\x64`. Clique em "OK" para salvar as alterações.    
 
-## Compilar arquivos .tex
+## Compilar arquivos latex
 
-Para compilar os arquivos .tex, abra o terminal na pasta onde estão os arquivos e execute o seguinte comando:
+Para compilar os arquivos latex, abra o terminal na pasta onde estão os arquivos e execute o seguinte comando:
 
 ```sh
-pdflatex.exe --output-directory=out Relatorio.tex
+pdflatex.exe --output-directory=out Relatoriolatex
 
 ```
 
