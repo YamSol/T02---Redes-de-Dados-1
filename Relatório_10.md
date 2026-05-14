@@ -407,7 +407,7 @@ Foi demonstrado, de forma prática, que a adoção de **TLS** em HTTP protege a 
 
 ---
 
-## Apêndice — Troubleshooting rápido
+## Apêndice 1 — Troubleshooting rápido
 
 * **Não vejo tráfego no Wireshark:** selecione a interface da NAT Network correta e gere tráfego com `curl` no user 2 - Debian.
 * **HTTPS não sobe:** confirme `a2enmod ssl`, `a2ensite default-ssl`, caminhos de certificado no `default-ssl.conf` e reinício do Apache.
@@ -415,3 +415,11 @@ Foi demonstrado, de forma prática, que a adoção de **TLS** em HTTP protege a 
 * **`ping` entre as VMs falha:** confirme que ambas estão em **NAT Network (`NatNetwork`)**, que os dois IPs estão na mesma faixa de rede e que o teste usa o endereço correto de destino.
 * **VMs não se enxergam:** confirme ambas em **NAT Network (`NatNetwork`)** com DHCP ON.
 * **Wireshark não abre ou não captura corretamente:** execute novamente com `sudo wireshark` e confirme que a interface da NAT Network foi selecionada.
+
+## Apêndice 2 — Tela preta ao carregar a interface gráfica (VirtualBox)**
+
+ O Debian usa **Wayland** por padrão, que pode ser incompatível com o VirtualBox. Quando a tela ficar escura, pressione **Ctrl + Alt + F2**, faça login e execute:
+ ```bash
+ sudo nano /etc/gdm3/daemon.conf
+ ```
+ Localize `#WaylandEnable=false`, remova o `#`, salve e reinicie. Se não resolver, verifique nas configurações da VM: controladora **VMSVGA**, **aceleração 3D desativada**.
