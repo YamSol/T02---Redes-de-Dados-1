@@ -446,11 +446,20 @@ Com **Suricata na própria VM** e **regras locais** simples, comprovamos a detec
 * **Classificação diferente no log:**
   Dependendo do mapeamento interno de classificação, `classtype:attempted-recon` pode aparecer como **Attempted Information Leak** no `fast.log`.
 
+## Apêndice 2 — Tela preta ao carregar a interface gráfica no Debian (VirtualBox)
 
-## Apêndice 2 — Tela preta ao carregar a interface gráfica (VirtualBox)**
+O Debian moderno utiliza **Wayland** como servidor gráfico padrão, que pode ser incompatível com as controladoras de vídeo virtuais do VirtualBox — a tela fica escura logo após o carregamento dos serviços, impedindo o login gráfico.
 
- O Debian usa **Wayland** por padrão, que pode ser incompatível com o VirtualBox. Quando a tela ficar escura, pressione **Ctrl + Alt + F2**, faça login e execute:
- ```bash
- sudo nano /etc/gdm3/daemon.conf
- ```
- Localize `#WaylandEnable=false`, remova o `#`, salve e reinicie. Se não resolver, verifique nas configurações da VM: controladora **VMSVGA**, **aceleração 3D desativada**.
+**Solução: forçar o uso do Xorg.** Quando a tela ficar escura, pressione **Ctrl + Alt + F2** para abrir um terminal em modo texto, faça login e execute:
+```bash
+sudo nano /etc/gdm3/daemon.conf
+```
+Localize a linha `#WaylandEnable=false`, remova o `#` e salve. Depois reinicie:
+```bash
+sudo reboot
+```
+
+Se o problema persistir, desligue a VM, acesse **Configurações > Tela** no VirtualBox e verifique:
+- Controladora gráfica: **VMSVGA**
+- **Aceleração 3D desativada**
+- Memória de vídeo no máximo disponível
