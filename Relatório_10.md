@@ -132,7 +132,7 @@ O TLS cria um canal cifrado sobre TCP por meio do *handshake*, com negociação 
    Em seguida, recarregue a interface:
 
    ```bash
-   sudo ifdown <interface> ; sudo ifup <interface>
+   sudo ifdown <interface> && sudo ifup <interface>
    ```
 
 2. Em **cada VM Debian**, execute:
