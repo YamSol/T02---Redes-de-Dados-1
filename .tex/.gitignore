@@ -7,6 +7,3 @@
 *.fls
 *.fdb_latexmk
 *.synctex.gz
-
-# Imagens baixadas localmente
-imgs/
