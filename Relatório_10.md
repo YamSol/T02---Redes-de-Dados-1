@@ -437,11 +437,11 @@ Se o problema persistir, desligue a VM, acesse **Configurações > Tela** no Vir
 
 ## Apêndice 3 — Instalar VirtualBox Guest Additions
 
-<img width="800" alt="Menu inserir imagem de CD" src="[placeholder_000](https://github.com/user-attachments/assets/0cc26f4a-24ca-46d9-a223-7b166946d40c)" />
+<img width="800" alt="Menu inserir imagem de CD" src="https://github.com/user-attachments/assets/0cc26f4a-24ca-46d9-a223-7b166946d40c" />
 
 1. No menu superior, selecione **Dispositivo** e **"Inserir imagem de CD..."**.
 
-<img width="800" alt="Files executar software Guest Additions" src="[placeholder_001](https://github.com/user-attachments/assets/59e7f49e-7b79-4c0e-a8b0-054232919920)" />
+<img width="800" alt="Files executar software Guest Additions" src="https://github.com/user-attachments/assets/59e7f49e-7b79-4c0e-a8b0-054232919920" />
 
 2. Na máquina virtual, abra **Files**, selecione o disco **"Vbox..."** e clique em **"Run Software"**. Quando perguntado, selecione **"Run"** e insira a senha.
 
