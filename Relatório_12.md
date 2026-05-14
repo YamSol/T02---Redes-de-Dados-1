@@ -124,7 +124,7 @@ Aplicaremos **regras** (ex.: **bloquear HTTP**, **bloquear um site específico**
 
 * Inicie a VM **pfSense** no VirtualBox e aguarde o carregamento completo.
 
-<img width="800" alt="Tela inicial do pfSense" src="https://github.com/user-attachments/assets/e294a17e/ef55-4c15-ba03-bacf3f0eb116" />
+<img width="800" alt="Tela inicial do pfSense" src="https://github.com/user-attachments/assets/6ad39da2-6809-43a4-a026-46120cf96a00" />
 
 
 4. **OBSERVAÇÕES**
