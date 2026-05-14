@@ -148,30 +148,17 @@ Use este ajuste em **cada VM Debian** quando ela estiver sem IPv4 válido, fora 
    ip a
    ```
 
-2. Identifique o endereço IPv4 usado na interface conectada à **`NatNetwork`** e verifique se os IPs de **user 1 - Debian** e **user 2 - Debian** pertencem à **mesma faixa de rede** configurada no VirtualBox.
-
+2. Identifique o endereço IPv4 usado na interface conectada à **`NatNetwork`**.
+   Verifique se os IPs de **user 1 - Debian** e **user 2 - Debian** pertencem à **mesma faixa de rede** configurada no VirtualBox:
+   ```bash
+   ip a
+   ```
    * Exemplo: se a `NatNetwork` estiver em `10.0.2.0/24`, os dois IPs devem seguir o padrão `10.0.2.x/24`.
    * Anote o IP do servidor como **`<IP_USER1>`** e o IP do cliente como **`<IP_USER2>`**.
 
   <img width="1481" height="445" alt="image" src="https://github.com/user-attachments/assets/70c2e67a-184a-487b-a232-36a1759252e1" />
 
    > **Anote antes de seguir:** todos os comandos posteriores usam esses dois valores. Se necessário, mantenha os IPs anotados em separado durante a execução do laboratório.
-
-3. **Se os IPs estiverem compatíveis**, avance para o teste de comunicação.
-
-4. **Se os IPs não estiverem na mesma rede**, ou se alguma VM não tiver recebido um IPv4 válido da **`NatNetwork`**, execute em **cada VM Debian**:
-
-   ```bash
-   IFACE=$(ip route | awk '/default/ {print $5; exit}')
-   sudo dhclient -r "$IFACE" || true
-   sudo ip addr flush dev "$IFACE"
-   sudo dhclient "$IFACE"
-   ip -4 a show "$IFACE"
-   ```
-
-   > **Nota:** a interface padrão em Debian no VirtualBox é normalmente **`enp0s3`** (Ethernet, barramento 0, slot 3). Se precisar verificar ou consultar manualmente, execute `ip route` ou `ip a` para confirmar qual interface está ativa.
-
-   Após isso, execute novamente `ip a` nas duas VMs e confirme se os endereços agora estão na mesma faixa de rede.
 
 5. **Testar comunicação entre as VMs com `ping`:**
 
