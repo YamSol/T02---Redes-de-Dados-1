@@ -94,7 +94,7 @@ O TLS cria um canal cifrado sobre TCP por meio do *handshake*, com negociação 
    * Marque **Habilitar DHCP**
    * Confirme com **Aplicar**
 
-<img width="1190" height="862" alt="image" src=".tex/imgs/a890ec72-c5da-49a0-81c3-e21ee7deb404.png" />
+<img width="1190" height="862" alt="image" src=".tex/imgs  />
 
 4. **Vincular cada VM à `NatNetwork`:**
 
