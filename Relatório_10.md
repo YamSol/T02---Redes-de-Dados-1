@@ -416,10 +416,21 @@ Foi demonstrado, de forma prática, que a adoção de **TLS** em HTTP protege a 
 * **VMs não se enxergam:** confirme ambas em **NAT Network (`NatNetwork`)** com DHCP ON.
 * **Wireshark não abre ou não captura corretamente:** execute novamente com `sudo wireshark` e confirme que a interface da NAT Network foi selecionada.
 
-## Apêndice 2 — Tela preta ao carregar a interface gráfica (VirtualBox)**
 
- O Debian usa **Wayland** por padrão, que pode ser incompatível com o VirtualBox. Quando a tela ficar escura, pressione **Ctrl + Alt + F2**, faça login e execute:
- ```bash
- sudo nano /etc/gdm3/daemon.conf
- ```
- Localize `#WaylandEnable=false`, remova o `#`, salve e reinicie. Se não resolver, verifique nas configurações da VM: controladora **VMSVGA**, **aceleração 3D desativada**.
+## Apêndice 2 — Tela preta ao carregar a interface gráfica no Debian (VirtualBox)
+
+O Debian moderno utiliza **Wayland** como servidor gráfico padrão, que pode ser incompatível com as controladoras de vídeo virtuais do VirtualBox — a tela fica escura logo após o carregamento dos serviços, impedindo o login gráfico.
+
+**Solução: forçar o uso do Xorg.** Quando a tela ficar escura, pressione **Ctrl + Alt + F2** para abrir um terminal em modo texto, faça login e execute:
+```bash
+sudo nano /etc/gdm3/daemon.conf
+```
+Localize a linha `#WaylandEnable=false`, remova o `#` e salve. Depois reinicie:
+```bash
+sudo reboot
+```
+
+Se o problema persistir, desligue a VM, acesse **Configurações > Tela** no VirtualBox e verifique:
+- Controladora gráfica: **VMSVGA**
+- **Aceleração 3D desativada**
+- Memória de vídeo no máximo disponível
