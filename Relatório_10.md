@@ -1,4 +1,4 @@
-<img width="180" alt="image" src="https://github.com/user-attachments/assets/cf68b22b-ecb8-4e9e-8f09-271ef1bc1246" />
+﻿<img width="180" alt="image" src=".tex/imgs/cf68b22b-ecb8-4e9e-8f09-271ef1bc1246.png" />
 
 <div align="right">
 T02 - Redes de Dados
@@ -94,7 +94,7 @@ O TLS cria um canal cifrado sobre TCP por meio do *handshake*, com negociação 
    * Marque **Habilitar DHCP**
    * Confirme com **Aplicar**
 
-<img width="1190" height="862" alt="image" src="https://github.com/user-attachments/assets/a890ec72-c5da-49a0-81c3-e21ee7deb404" />
+<img width="1190" height="862" alt="image" src=".tex/imgs/a890ec72-c5da-49a0-81c3-e21ee7deb404.png" />
 
 4. **Vincular cada VM à `NatNetwork`:**
 
@@ -102,7 +102,7 @@ O TLS cria um canal cifrado sobre TCP por meio do *handshake*, com negociação 
    * **Adaptador 1** (*Adapter 1*) → **Conectado a:** *NAT Network* → **Nome:** `NatNetwork`
    * OK
   
-<img width="808" height="345" alt="image" src="https://github.com/user-attachments/assets/3a4a1d8a-63b4-4c48-b06a-d65de72964a2" />
+<img width="808" height="345" alt="image" src=".tex/imgs/3a4a1d8a-63b4-4c48-b06a-d65de72964a2.png" />
 
 5. **Ajustar recursos de hardware das VMs (user 1 - Debian e user 2 - Debian):**
 
@@ -110,7 +110,7 @@ O TLS cria um canal cifrado sobre TCP por meio do *handshake*, com negociação 
    * VirtualBox → **Configurações** → **Sistema** → **Processador** → **Processadores: `3`**
    * Após ajustar os recursos, **iniciar** as VMs
 
-<img width="466" height="122" alt="image" src="https://github.com/user-attachments/assets/4e1de125-9012-4b75-b395-e3aa73a179a8" />
+<img width="466" height="122" alt="image" src=".tex/imgs/4e1de125-9012-4b75-b395-e3aa73a179a8.png" />
 
 > **Ao final desta etapa:** as duas VMs devem estar ligadas, vinculadas à `NatNetwork` e prontas para receber IP via DHCP.
 
@@ -127,7 +127,7 @@ O TLS cria um canal cifrado sobre TCP por meio do *handshake*, com negociação 
    * Exemplo: se a `NatNetwork` estiver em `10.0.2.0/24`, os dois IPs devem seguir o padrão `10.0.2.x/24`.
    * Anote o IP do servidor como **`<IP_USER1>`** e o IP do cliente como **`<IP_USER2>`**.
 
-  <img width="1481" height="445" alt="image" src="https://github.com/user-attachments/assets/70c2e67a-184a-487b-a232-36a1759252e1" />
+  <img width="1481" height="445" alt="image" src=".tex/imgs/70c2e67a-184a-487b-a232-36a1759252e1.png" />
 
    > **Anote antes de seguir:** todos os comandos posteriores usam esses dois valores. Se necessário, mantenha os IPs anotados em separado durante a execução do laboratório.
 
@@ -161,7 +161,7 @@ O TLS cria um canal cifrado sobre TCP por meio do *handshake*, com negociação 
    ping -c2 <IP_USER2>
    ```
 
-   <img width="1481" height="370" alt="image" src="https://github.com/user-attachments/assets/e537c6a0-607b-4553-abec-e13e0b7375ad" />
+   <img width="1481" height="370" alt="image" src=".tex/imgs/e537c6a0-607b-4553-abec-e13e0b7375ad.png" />
 
 > **Ao final desta etapa:** as duas VMs devem estar na mesma rede e responder ao `ping` entre si.
 
@@ -173,7 +173,7 @@ O TLS cria um canal cifrado sobre TCP por meio do *handshake*, com negociação 
 sudo apt update && sudo apt install -y apache2 openssl
 ```
 
-<img width="695" height="323" alt="image" src="https://github.com/user-attachments/assets/1592bc42-1a35-46b9-8e64-ac8779790f87" />
+<img width="695" height="323" alt="image" src=".tex/imgs/1592bc42-1a35-46b9-8e64-ac8779790f87.png" />
 
 #### B) Criar página de teste com conteúdo identificável
 
@@ -182,7 +182,7 @@ sudo mkdir -p /var/www/html
 echo "<h1>HELLO_TLS_HTTP</h1>" | sudo tee /var/www/html/index.html
 ```
 
-<img width="628" height="96" alt="image" src="https://github.com/user-attachments/assets/1d5ca830-2b83-4197-9bb3-a7fd1f6852c1" />
+<img width="628" height="96" alt="image" src=".tex/imgs/1d5ca830-2b83-4197-9bb3-a7fd1f6852c1.png" />
 
 #### C) Ativar o Apache e verificar a porta HTTP
 
@@ -193,7 +193,7 @@ ss -tulpn | grep :80
 
 > **Resultado esperado:** deve aparecer uma linha indicando que o Apache está em estado **LISTEN** na porta **80**.
 
-<img width="723" height="153" alt="image" src="https://github.com/user-attachments/assets/2c5dc094-4ede-4deb-90fd-0c3007cca55d" />
+<img width="723" height="153" alt="image" src=".tex/imgs/2c5dc094-4ede-4deb-90fd-0c3007cca55d.png" />
 
 > **Ao final desta etapa:** o servidor deve estar respondendo em **HTTP** na porta **80**.
 
@@ -208,7 +208,7 @@ sudo apt update
 sudo apt install -y curl wireshark
 ```
 
-<img width="596" height="177" alt="image" src="https://github.com/user-attachments/assets/92dbd981-4482-47f4-a52c-a111d0a10500" />
+<img width="596" height="177" alt="image" src=".tex/imgs/92dbd981-4482-47f4-a52c-a111d0a10500.png" />
 
 #### B) Abrir o Wireshark e identificar a interface de captura
 
@@ -218,7 +218,7 @@ sudo wireshark
 
 Esse comando **apenas abre o programa**. Na tela inicial, identifique a **interface da NAT Network** (a que mostra o IP do **user 2 - Debian**, costuma ser **enp0s3**) e deixe o Wireshark pronto para iniciar a captura no próximo passo.
 
-<img width="921" height="501" alt="image" src="https://github.com/user-attachments/assets/9e375ed7-f018-4bb6-9ffd-9ccbb67e950a" />
+<img width="921" height="501" alt="image" src=".tex/imgs/9e375ed7-f018-4bb6-9ffd-9ccbb67e950a.png" />
 
 Durante a análise dos pacotes, use como referência o filtro:
 
@@ -249,9 +249,9 @@ Antes de iniciar os cenários, confirme:
 
 1. **No user 2 - Debian:** com o Wireshark já aberto, **inicie a captura** na interface da **NAT Network** identificada anteriormente.
 
-<img width="366" height="292" alt="image" src="https://github.com/user-attachments/assets/480f3519-fe3c-4dfd-8cec-329fc63a8c0d" />
+<img width="366" height="292" alt="image" src=".tex/imgs/480f3519-fe3c-4dfd-8cec-329fc63a8c0d.png" />
 
-<img width="777" height="213" alt="image" src="https://github.com/user-attachments/assets/e8be4387-047f-4705-a085-4eafb714164f" />
+<img width="777" height="213" alt="image" src=".tex/imgs/e8be4387-047f-4705-a085-4eafb714164f.png" />
 
 > **Observação:** o quadrado vermelho indica que a captura está ativa.
 
@@ -265,13 +265,13 @@ curl -v http://<IP_USER1>
 
 > **Resultado esperado no terminal:** o `curl` deve completar a requisição e exibir a resposta do Apache, incluindo o conteúdo da página com `HELLO_TLS_HTTP`.
 
-<img width="467" height="417" alt="image" src="https://github.com/user-attachments/assets/3c0016d3-3879-4451-94a3-f9b2ad3f8a92" />
+<img width="467" height="417" alt="image" src=".tex/imgs/3c0016d3-3879-4451-94a3-f9b2ad3f8a92.png" />
 
 #### C) Observar no Wireshark
 
 1. **Pause a captura** no Wireshark.
 
-<img width="138" height="92" alt="image" src="https://github.com/user-attachments/assets/cfedfeba-6545-4297-aa1b-530b14688ed8" />
+<img width="138" height="92" alt="image" src=".tex/imgs/cfedfeba-6545-4297-aa1b-530b14688ed8.png" />
 
 2. Aplique o filtro:
 
@@ -281,8 +281,8 @@ curl -v http://<IP_USER1>
 
 3. **O que observar:** requisição `GET / HTTP/1.1` e resposta `200 OK` com **payload legível** (HTML contendo `HELLO_TLS_HTTP`).
 
-<img width="897" height="532" alt="image" src="https://github.com/user-attachments/assets/43497e00-b9d0-436b-8072-859dcaa368e0" />
-<img width="512" height="332" alt="image" src="https://github.com/user-attachments/assets/2310e98c-7f1a-40fc-887a-592cdceb22a9" />
+<img width="897" height="532" alt="image" src=".tex/imgs/43497e00-b9d0-436b-8072-859dcaa368e0.png" />
+<img width="512" height="332" alt="image" src=".tex/imgs/2310e98c-7f1a-40fc-887a-592cdceb22a9.png" />
 
 > **Ao final deste cenário:** o tráfego HTTP deve aparecer em texto claro no Wireshark.
 
@@ -298,7 +298,7 @@ sudo a2ensite default-ssl
 sudo systemctl reload apache2
 ```
 
-<img width="412" height="277" alt="image" src="https://github.com/user-attachments/assets/46ea3fc5-5434-44a8-8773-2cb63ed55ee3" />
+<img width="412" height="277" alt="image" src=".tex/imgs/46ea3fc5-5434-44a8-8773-2cb63ed55ee3.png" />
 
 > **Observação:** caso apareça um erro relacionado ao Apache, ignore - ele apenas indica que o Apache não estava rodando anteriormente.
 
@@ -311,7 +311,7 @@ sudo openssl req -x509 -nodes -days 365 -newkey rsa:2048 \
   -subj "/C=BR/ST=MG/L=Inatel/O=Lab/OU=NetSec/CN=<IP_USER1>"
 ```
 
-<img width="932" height="587" alt="image" src="https://github.com/user-attachments/assets/fa045612-e0ef-4120-9123-b8f47b2144ff" />
+<img width="932" height="587" alt="image" src=".tex/imgs/fa045612-e0ef-4120-9123-b8f47b2144ff.png" />
 
 3. **Apontar o vhost SSL para o certificado/chave e reiniciar Apache:**
 
@@ -324,7 +324,7 @@ ss -tulpn | grep :443
 
 > **Resultado esperado:** deve aparecer uma linha indicando que o Apache está em estado **LISTEN** na porta **443**.
 
-<img width="930" height="171" alt="image" src="https://github.com/user-attachments/assets/baaaf721-a9ce-4249-8f87-748c2494a942" />
+<img width="930" height="171" alt="image" src=".tex/imgs/baaaf721-a9ce-4249-8f87-748c2494a942.png" />
 
 > **Ao final desta etapa:** o Apache deve estar escutando em **HTTPS** na porta **443**.
 
@@ -332,9 +332,9 @@ ss -tulpn | grep :443
 
 1. No Wireshark, **reinicie a captura** na interface da **NAT Network** para registrar somente o tráfego do novo teste.
 
-<img width="786" height="497" alt="image" src="https://github.com/user-attachments/assets/069ce333-c2a3-46b4-8ada-6343845d21f3" />
+<img width="786" height="497" alt="image" src=".tex/imgs/069ce333-c2a3-46b4-8ada-6343845d21f3.png" />
 
-<img width="777" height="213" alt="image" src="https://github.com/user-attachments/assets/e8be4387-047f-4705-a085-4eafb714164f" />
+<img width="777" height="213" alt="image" src=".tex/imgs/e8be4387-047f-4705-a085-4eafb714164f.png" />
 
 3. Execute:
 
@@ -345,13 +345,13 @@ curl -vk https://<IP_USER1>
 > O `-k` é intencional no laboratório: ele permite seguir com certificado autoassinado.
 > **Resultado esperado no terminal:** a conexão HTTPS deve funcionar mesmo com o certificado autoassinado, e o `curl` deve retornar a resposta do Apache.
 
-<img width="766" height="875" alt="image" src="https://github.com/user-attachments/assets/b612937e-31f3-40ec-9cfc-715101247637" />
+<img width="766" height="875" alt="image" src=".tex/imgs/b612937e-31f3-40ec-9cfc-715101247637.png" />
 
 #### C) Observar no Wireshark
 
 1. **Pause a captura** no Wireshark.
 
-<img width="138" height="92" alt="image" src="https://github.com/user-attachments/assets/cfedfeba-6545-4297-aa1b-530b14688ed8" />
+<img width="138" height="92" alt="image" src=".tex/imgs/cfedfeba-6545-4297-aa1b-530b14688ed8.png" />
 
 2. Remova o filtro anterior (se houver).
 3. Aplique o filtro:
@@ -362,8 +362,8 @@ curl -vk https://<IP_USER1>
 
 4. **O que observar:** pacotes de **handshake TLS** (ClientHello/ServerHello/Certificado) e **payload cifrado**.
 
-<img width="1086" height="420" alt="image" src="https://github.com/user-attachments/assets/033753e3-daae-4dfd-966a-ce779528bdf9" />
-<img width="1188" height="701" alt="image" src="https://github.com/user-attachments/assets/304bdb65-de32-46b1-a97e-19e5b85d3833" />
+<img width="1086" height="420" alt="image" src=".tex/imgs/033753e3-daae-4dfd-966a-ce779528bdf9.png" />
+<img width="1188" height="701" alt="image" src=".tex/imgs/304bdb65-de32-46b1-a97e-19e5b85d3833.png" />
 
 > **Ao final deste cenário:** o conteúdo da aplicação não deve aparecer legível no Wireshark; apenas o handshake e os dados criptografados ficam visíveis.
 
