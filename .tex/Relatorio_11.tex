@@ -1,0 +1,431 @@
+\input{preamble}
+
+\begin{document}
+
+\capa{Relatório 11}{Configuração de IDS de Rede usando Suricata no Debian (VM no VirtualBox)}
+
+\tableofcontents
+\newpage
+
+\noindent
+Este relatório descreve a configuração de um \textbf{IDS} com \textbf{Suricata} \textbf{diretamente no Debian (uma única VM)}, monitorando o tráfego da própria VM para a \textbf{Internet}. Usaremos \textbf{apenas regras locais (Custom Rules)}, sem baixar rulesets externos. O objetivo é \textbf{instalar}, \textbf{iniciar} o Suricata em \textbf{modo IDS}, \textbf{gerar tráfego didático} (via navegador/\texttt{curl}) e \textbf{analisar os alertas} no \texttt{fast.log}/\texttt{eve.json}.
+
+\begin{itemize}
+  \item \textbf{Material de apoio:} \url{https://github.com/vin1sss/T02---Redes-de-Dados-1/}
+\end{itemize}
+
+\section{Introdução}
+
+A única VM (Debian Desktop) atuará como \textbf{sensor IDS} (Suricata) e como \textbf{cliente} que gera tráfego. As regras locais foram desenhadas para disparar alertas de forma controlada e didática (URI, BODY/POST, HEADER e DNS).
+
+Um IDS de rede opera de forma passiva: observa os pacotes, aplica assinaturas/regras de inspeção e gera alertas quando encontra padrões suspeitos, sem bloquear diretamente o tráfego. No Suricata, essa detecção ocorre com inspeção profunda de protocolos (DPI), permitindo visibilidade de elementos como URI, cabeçalhos, corpo HTTP e consultas DNS.
+
+\textbf{Pilares:} \textbf{Confidencialidade} e \textbf{Monitoramento/Detecção}, com ênfase em \textbf{auditoria} e \textbf{visibilidade} do tráfego.
+
+\section{Conceitos e Fundamentos}
+
+\begin{itemize}
+  \item \textbf{Firewall $\times$ IDS:} firewall \textbf{impõe} política (permite/bloqueia); IDS \textbf{observa e alerta} (passivo).
+  \item \textbf{Suricata (DPI):} inspeção por \textbf{regras/assinaturas}. Vamos criar \textbf{regras locais} para comprovar a capacidade de inspeção de \textbf{URI}, \textbf{cabeçalhos}, \textbf{corpo HTTP} e \textbf{consultas DNS}.
+  \item \textbf{HTTPS vs. HTTP:} em \textbf{HTTPS} o conteúdo é cifrado (IDS vê metadados, p.ex. SNI/JA3); em \textbf{HTTP} o IDS consegue inspecionar cabeçalhos e corpo.
+  \item \textbf{Termos das regras (resumo):}
+  \begin{itemize}
+    \item \texttt{flow:to\_server} = tráfego \textbf{do cliente para o servidor} (requisição).
+    \item \texttt{http.uri} = caminho solicitado (p.ex. \texttt{/rota}).
+    \item \texttt{http\_header} = cabeçalhos HTTP (ex.: \texttt{User-Agent}, \texttt{Host}, cabeçalhos customizados).
+    \item \texttt{http.request\_body} = corpo enviado pelo cliente (POST/PUT).
+    \item \texttt{dns.query} = nome de domínio consultado no DNS.
+    \item \texttt{classtype}/\texttt{priority} = \textbf{classificação} e \textbf{prioridade} do alerta no log.
+  \end{itemize}
+\end{itemize}
+
+\section{Ambiente e Topologia}
+
+\textbf{Topologia lógica (1 VM):}
+\begin{itemize}
+  \item \textbf{user 1 - Debian (com Suricata)} atuando como sensor IDS e cliente de teste.
+  \item Saída para Internet através de NAT.
+\end{itemize}
+
+\begin{notebox}
+\textbf{Topologia:} \textbf{user 1 - Debian $\leftrightarrow$ NAT (VBox) $\leftrightarrow$ Internet}.
+\end{notebox}
+
+\subsection{Resumo do laboratório}
+
+\begin{tabularx}{\linewidth}{lX}
+\toprule
+\textbf{Elemento} & \textbf{Definição} \\
+\midrule
+Rede do VirtualBox & \textbf{NAT} com DHCP do VirtualBox \\
+VM do laboratório & \textbf{user 1 - Debian} \\
+Papel da VM & Sensor IDS com \textbf{Suricata} e cliente que gera o tráfego \\
+Tráfego observado & Saída da própria VM para a Internet \\
+Evidências principais & Alertas em \texttt{fast.log} e eventos em \texttt{eve.json} \\
+Recursos da VM & \textbf{6 GB de RAM} e \textbf{3 núcleos de CPU} \\
+\bottomrule
+\end{tabularx}
+
+\subsection{Referências usadas durante a execução}
+
+\begin{tabularx}{\linewidth}{lX}
+\toprule
+\textbf{Item} & \textbf{Uso} \\
+\midrule
+Senha das máquinas virtuais & \texttt{pytest} \\
+Senha solicitada pelo \texttt{sudo} & \texttt{pytest} \\
+Interface de saída da VM & Confirmada com \texttt{ip route get 1.1.1.1} \\
+\texttt{enp0s3} & Nome usado nos exemplos do relatório para a interface monitorada \\
+\texttt{/etc/suricata/rules/local.rules} & Arquivo das regras locais do experimento \\
+\texttt{/var/log/suricata/fast.log} & Log textual acompanhado durante os testes \\
+\texttt{/var/log/suricata/eve.json} & Log JSON usado para consulta alternativa dos alertas \\
+\bottomrule
+\end{tabularx}
+
+\subsection{Pacotes usados no laboratório}
+
+\begin{itemize}
+  \item \texttt{dnsutils}, \texttt{net-tools}, \texttt{curl}, \texttt{wget}
+  \item \texttt{suricata}, \texttt{tcpdump}, \texttt{jq}
+\end{itemize}
+
+\subsection{Guia auxiliar de VirtualBox}
+
+\begin{notebox}
+Se não estiver conseguindo copiar e colar comandos entre o computador host e a VM, redimensionar a tela corretamente ou usar melhor a integração com o VirtualBox, consulte o guia \texttt{VirtualBox\_Guest\_Additions.md} para instalar o \textbf{VirtualBox Guest Additions}.
+\end{notebox}
+
+\section{Instalação e Preparação}
+
+\begin{notebox}
+Se a interface indicada por \texttt{ip route get 1.1.1.1} não for \texttt{enp0s3}, substitua apenas esse nome nos comandos de inicialização e captura que usam a interface de rede. Mantenha essa interface anotada antes de seguir.
+\end{notebox}
+
+\subsection{Preparar o ambiente no VirtualBox}
+
+\begin{itemize}
+  \item \textbf{VM:} \texttt{user 1 - Debian}
+  \item \textbf{Adapter 1:} \textbf{NAT} (DHCP do VBox)
+\end{itemize}
+
+\imgph{0.65\linewidth}{https://github.com/user-attachments/assets/518f2ddb-4262-4f51-bb8d-7c9dd8cb2e6b}
+
+\begin{itemize}
+  \item \textbf{Recursos da VM:} \textbf{6 GB de RAM} e \textbf{3 núcleos de CPU}
+\end{itemize}
+
+\imgph{0.4\linewidth}{https://github.com/user-attachments/assets/11c305c2-950f-4493-996b-427af0095074}
+
+\begin{itemize}
+  \item \textbf{Iniciar a VM}
+\end{itemize}
+
+\begin{notebox}
+\textbf{Ao final desta etapa:} a VM deve estar configurada em \textbf{NAT}, com os recursos previstos e pronta para receber endereçamento via DHCP.
+\end{notebox}
+
+\subsection{Após iniciar a VM, conferir a rede e padronizar o DHCP}
+
+\subsubsection*{A) Padronizar a interface em DHCP}
+
+\begin{lstlisting}
+IFACE=$(ip route | awk '/default/ {print $5; exit}')
+sudo dhclient -r "$IFACE" || true
+sudo ip addr flush dev "$IFACE"
+sudo dhclient "$IFACE"
+ip -4 a show "$IFACE"
+\end{lstlisting}
+
+\imgph{0.6\linewidth}{https://github.com/user-attachments/assets/905455e8-4a02-4a6a-ab2e-5e7f0ebad5d7}
+
+\subsubsection*{B) Validar IP, saída para Internet e interface monitorada}
+
+\begin{lstlisting}
+ip a                    # deve obter IP 10.0.2.x (NAT do VBox)
+ping -c2 1.1.1.1        # checar saida para internet
+ip route get 1.1.1.1    # confirmar interface de saida (ex.: enp0s3)
+\end{lstlisting}
+
+\imgph{0.7\linewidth}{https://github.com/user-attachments/assets/50ad173d-5d56-426f-bc52-58c3e6b848a3}
+
+\begin{notebox}
+\textbf{Resultado esperado:} a VM apresenta IP coerente com a rede NAT, alcança \texttt{1.1.1.1} e indica a interface de saída usada pelo tráfego observado.
+
+\textbf{Ao final desta etapa:} a conectividade externa e a interface de monitoramento devem estar confirmadas antes da instalação do Suricata.
+\end{notebox}
+
+\subsection{Preparar o sistema antes da instalação}
+
+\subsubsection*{A) Prevenir lock do \texttt{apt}}
+
+\begin{lstlisting}
+sudo systemctl stop packagekit || true
+sudo pkill -x packagekitd || true
+sudo dpkg --configure -a
+\end{lstlisting}
+
+\imgph{0.45\linewidth}{https://github.com/user-attachments/assets/d30e0ae4-9ecf-491a-8501-b15edcc568c7}
+
+\begin{notebox}
+\textbf{Ao final desta etapa:} o sistema deve estar liberado para instalar os pacotes sem conflito de gerenciador.
+\end{notebox}
+
+\subsection{Instalar utilitários e Suricata}
+
+\begin{lstlisting}
+sudo apt update && sudo apt install -y dnsutils net-tools curl wget suricata tcpdump jq
+\end{lstlisting}
+
+\imgph{0.75\linewidth}{https://github.com/user-attachments/assets/4ea2ec37-be75-4134-965c-24403e454204}
+
+\begin{notebox}
+\textbf{Ao final desta etapa:} todas as ferramentas para gerar tráfego, monitorar a rede e consultar alertas devem estar instaladas.
+\end{notebox}
+
+\subsection{Criar e validar as regras locais}
+
+\subsubsection*{A) Entender o papel das regras}
+
+\begin{notebox}
+\textbf{O que cada regra faz:}
+\begin{itemize}
+  \item \textbf{SID 1002001 (URI):} alerta quando a \textbf{URI} contém \texttt{/SURICATA\_BROWSER\_URI\_01}. Inspeção de caminho (HTTP em claro).
+  \item \textbf{SID 1002002 (BODY/POST):} alerta quando o \textbf{corpo} contém \texttt{SURICATA\_BROWSER\_BODY\_02}. Inspeção de payload em POST/PUT.
+  \item \textbf{SID 1002003 (HEADER):} alerta quando um \textbf{cabeçalho HTTP} contém \texttt{X-Trigger-Lab: 1}. Inspeção de cabeçalhos.
+  \item \textbf{SID 1002004 (DNS):} alerta quando a \textbf{consulta DNS} contém \texttt{suricata-trigger-lab.example}. Visibilidade de DNS.
+\end{itemize}
+\textbf{Arquivo:} \texttt{/etc/suricata/rules/local.rules} (uma linha por regra).
+\end{notebox}
+
+\subsubsection*{B) Criar o arquivo \texttt{local.rules}}
+
+\begin{lstlisting}
+sudo tee /etc/suricata/rules/local.rules >/dev/null <<'RULES'
+alert http any any -> any any (msg:"CUSTOM BROWSER - HTTP URI trigger"; flow:to_server; http.uri; content:"/SURICATA_BROWSER_URI_01"; nocase; sid:1002001; rev:4; classtype:web-application-activity; priority:2;)
+alert http any any -> any any (msg:"CUSTOM BROWSER - HTTP client body trigger"; flow:to_server; http.request_body; content:"SURICATA_BROWSER_BODY_02"; nocase; sid:1002002; rev:4; classtype:web-application-attack; priority:2;)
+alert http any any -> any any (msg:"CUSTOM BROWSER - HTTP header X-Trigger-Lab"; flow:to_server; content:"X-Trigger-Lab|3a| 1"; http_header; nocase; sid:1002003; rev:5; classtype:attempted-recon; priority:2;)
+alert udp any any -> any 53 (msg:"CUSTOM BROWSER - DNS query trigger"; dns.query; content:"suricata-trigger-lab.example"; nocase; sid:1002004; rev:3; classtype:attempted-recon; priority:3;)
+RULES
+\end{lstlisting}
+
+\imgph{0.85\linewidth}{https://github.com/user-attachments/assets/5ab11d4f-11c8-4de4-ac55-a93533803b58}
+
+\subsubsection*{C) Validar a sintaxe das regras}
+
+\begin{lstlisting}
+sudo suricata -T -S /etc/suricata/rules/local.rules -v
+# esperado: "4 rules successfully loaded, 0 failed"
+\end{lstlisting}
+
+\imgph{0.85\linewidth}{https://github.com/user-attachments/assets/480cb59f-ded9-49f3-bfbf-3d3b8d5fdedb}
+
+\begin{notebox}
+\textbf{Ao final desta etapa:} o arquivo de regras deve existir e o Suricata deve confirmar o carregamento das \textbf{4 regras locais}.
+\end{notebox}
+
+\subsection{Iniciar o Suricata em modo IDS e verificar a operação}
+
+\begin{warnbox}
+Em Debian, usar \texttt{--set outputs.*} pode causar erro de ``child node (null)''. Usaremos o YAML padrão.
+\end{warnbox}
+
+\subsubsection*{A) Subir o Suricata manualmente}
+
+\begin{lstlisting}
+# parar instancias anteriores e limpar pid/log
+sudo systemctl stop suricata
+sudo pkill -x suricata || true
+sudo rm -f /var/run/suricata.pid /var/log/suricata/fast.log
+
+# subir em daemon na interface correta (ex.: enp0s3)
+sudo suricata -i enp0s3 -S /etc/suricata/rules/local.rules -l /var/log/suricata -D
+
+# conferir que esta ativo
+ps aux | grep '[s]uricata'
+sudo tail -n 15 /var/log/suricata/suricata.log
+\end{lstlisting}
+
+\imgph{0.85\linewidth}{https://github.com/user-attachments/assets/bb721063-caf0-46e3-947c-1a2e5157cdea}
+
+\subsubsection*{B) Confirmar onde os alertas serão acompanhados}
+
+\textbf{Onde ver alertas:} \texttt{tail -f /var/log/suricata/fast.log}
+
+\textbf{Alternativa JSON:} \texttt{jq 'select(.event\_type=="alert")' /var/log/suricata/eve.json | tail -n 5}
+
+\begin{notebox}
+\textbf{Ao final desta etapa:} o Suricata deve estar ativo em modo IDS, carregando \texttt{local.rules} e com logs prontos para a observação dos testes.
+\end{notebox}
+
+\section{Procedimentos (Passo a Passo --- user 1 - Debian $\leftrightarrow$ Internet)}
+
+\subsection*{Checklist antes dos testes}
+
+\begin{itemize}
+  \item as \textbf{4 regras locais} foram validadas com \texttt{suricata -T};
+  \item o processo do \textbf{Suricata} está em execução;
+  \item o terminal de acompanhamento do \texttt{fast.log} está aberto;
+  \item a interface monitorada foi identificada (ex.: \texttt{enp0s3});
+  \item a VM possui conectividade para gerar o tráfego HTTP e DNS.
+\end{itemize}
+
+\subsection*{Organização dos terminais}
+
+\textbf{Terminal A:} \texttt{tail -f /var/log/suricata/fast.log}
+
+\imgph{0.5\linewidth}{https://github.com/user-attachments/assets/f7e2bad4-8a20-4919-979f-dd084d40962b}
+
+\textbf{Terminal B} (caso optar por testar usando \texttt{curl} diretamente no terminal): comandos de disparo abaixo. Dica: force IPv4 com \texttt{-4}.
+
+\subsection{Cenário 1 --- HTTP URI (SID 1002001)}
+
+\textbf{O que este teste demonstra:} que o Suricata consegue \textbf{inspecionar a URI} (caminho) de uma requisição HTTP e gerar alerta quando encontra a \textbf{string-alvo}.
+
+\subsubsection*{A) Executar o gatilho}
+
+\begin{lstlisting}
+curl -4 -s 'http://neverssl.com/SURICATA_BROWSER_URI_01' >/dev/null
+# ou navegador: http://neverssl.com/SURICATA_BROWSER_URI_01
+\end{lstlisting}
+
+\begin{itemize}
+  \item Caso demore para executar ou alertar, aguarde. Este comportamento é esperado.
+\end{itemize}
+
+\imgph{0.95\linewidth}{https://github.com/user-attachments/assets/75343aec-013b-4504-be75-92acb3f86fa6}
+
+\subsubsection*{B) Observar o alerta no log}
+
+\textbf{O que observar:} uma linha no \texttt{fast.log} com a mensagem \texttt{CUSTOM BROWSER - HTTP URI trigger} (SID 1002001), indicando tráfego \texttt{\{TCP\} <IP\_VM>:<porta> -> <IP\_destino>:80}.
+
+\begin{notebox}
+\textbf{Ao final deste cenário:} deve existir evidência de que a regra de \textbf{URI} foi acionada pelo tráfego HTTP gerado.
+\end{notebox}
+
+\subsection{Cenário 2 --- HTTP BODY/POST (SID 1002002)}
+
+\textbf{O que este teste demonstra:} que o Suricata consegue \textbf{inspecionar o corpo} (payload) de uma requisição HTTP (POST/PUT) e alertar quando a \textbf{string} estiver presente.
+
+\subsubsection*{A) Executar o gatilho}
+
+\begin{lstlisting}
+curl -4 -s -X POST -d 'SURICATA_BROWSER_BODY_02' 'http://neverssl.com/' >/dev/null
+# (opcional para ver o request)
+# curl -4 -v -X POST -d 'SURICATA_BROWSER_BODY_02' 'http://neverssl.com/' >/dev/null
+\end{lstlisting}
+
+\imgph{0.95\linewidth}{https://github.com/user-attachments/assets/24087409-8c8b-4a65-b4f8-8fe91cf8ccb7}
+
+\subsubsection*{B) Observar o alerta no log}
+
+\textbf{O que observar:} a mensagem \texttt{CUSTOM BROWSER - HTTP client body trigger} (SID 1002002). Se não disparar de primeira, rode com \texttt{-v} e valide que o \textbf{POST} saiu; rode novamente.
+
+\begin{notebox}
+\textbf{Ao final deste cenário:} deve existir evidência de que a regra de \textbf{corpo da requisição} foi acionada.
+\end{notebox}
+
+\subsection{Cenário 3 --- HTTP HEADER (SID 1002003)}
+
+\textbf{O que este teste demonstra:} que o Suricata consegue \textbf{inspecionar cabeçalhos HTTP} e gerar alerta quando um \textbf{cabeçalho customizado} (\texttt{X-Trigger-Lab: 1}) está presente.
+
+\subsubsection*{A) Executar o gatilho}
+
+\begin{lstlisting}
+curl -4 -s -H 'X-Trigger-Lab: 1' 'http://neverssl.com/' >/dev/null
+# (opcional verbose)
+# curl -4 -v -H 'X-Trigger-Lab: 1' 'http://neverssl.com/' >/dev/null
+\end{lstlisting}
+
+\imgph{0.95\linewidth}{https://github.com/user-attachments/assets/6f87fb49-cc08-4880-9b18-6cc2c3657e72}
+
+\subsubsection*{B) Observar o alerta no log}
+
+\textbf{O que observar:} a mensagem \texttt{CUSTOM BROWSER - HTTP header X-Trigger-Lab} (SID 1002003), com fluxo \texttt{\{TCP\} <IP\_VM>:<porta> -> <IP\_destino>:80}.
+
+\subsection{Cenário 4 --- DNS (SID 1002004)}
+
+\textbf{O que este teste demonstra:} que o Suricata enxerga \textbf{consultas DNS} e alerta quando a consulta contém o \textbf{domínio-alvo}.
+
+\subsubsection*{A) Executar o gatilho}
+
+\begin{lstlisting}
+dig +short suricata-trigger-lab.example >/dev/null
+# ou navegador: http://suricata-trigger-lab.example/
+\end{lstlisting}
+
+\imgph{0.95\linewidth}{https://github.com/user-attachments/assets/5cb962e1-b239-4938-ac74-6255a2d782f4}
+
+\subsubsection*{B) Observar o alerta no log}
+
+\textbf{O que observar:} a mensagem \texttt{CUSTOM BROWSER - DNS query trigger} (SID 1002004), com fluxo \texttt{\{UDP\} <IP\_VM>:<porta> -> <DNS\_resolvedor>:53}.
+
+\section{Verificação e Resultados}
+
+\subsection{Checklist de sucesso do experimento}
+
+\begin{itemize}
+  \item \texttt{suricata -T} retorna \texttt{4 rules successfully loaded, 0 rules failed}.
+  \item O Suricata permanece em execução (\texttt{ps aux | grep '[s]uricata'}) e sem erro crítico no \texttt{suricata.log}.
+  \item Cada um dos quatro cenários gera o alerta correspondente em \texttt{fast.log} ou \texttt{eve.json}.
+\end{itemize}
+
+\subsection{Quadro comparativo (cenários)}
+
+\begin{tabularx}{\linewidth}{cXXccc}
+\toprule
+\textbf{\#} & \textbf{Tráfego} & \textbf{Regra (msg)} & \textbf{SID} & \textbf{Resultado} & \textbf{Verificar em} \\
+\midrule
+1 & user 1 - Debian $\rightarrow$ Internet (HTTP/URI)    & \texttt{CUSTOM BROWSER - HTTP URI trigger}          & 1002001 & Alertas & \texttt{fast.log} / \texttt{eve.json} \\
+2 & user 1 - Debian $\rightarrow$ Internet (HTTP/Body)   & \texttt{CUSTOM BROWSER - HTTP client body trigger}  & 1002002 & Alertas & \texttt{fast.log} / \texttt{eve.json} \\
+3 & user 1 - Debian $\rightarrow$ Internet (HTTP/Header) & \texttt{CUSTOM BROWSER - HTTP header X-Trigger-Lab} & 1002003 & Alertas & \texttt{fast.log} / \texttt{eve.json} \\
+4 & user 1 - Debian $\rightarrow$ Internet (DNS)         & \texttt{CUSTOM BROWSER - DNS query trigger}         & 1002004 & Alertas & \texttt{fast.log} / \texttt{eve.json} \\
+\bottomrule
+\end{tabularx}
+
+\subsection{Coleta rápida dos alertas}
+
+\begin{lstlisting}
+# Ultimos alertas (formato fast)
+tail -n 20 /var/log/suricata/fast.log
+
+# Em JSON (EVE) com campos uteis, 1 por linha
+jq -r 'select(.event_type=="alert") | "\(.timestamp) SID=\(.alert.signature_id) MSG=\(.alert.signature) \(.src_ip):\(.src_port) -> \(.dest_ip):\(.dest_port)"' \
+  /var/log/suricata/eve.json | tail -n 10
+\end{lstlisting}
+
+\imgph{0.95\linewidth}{https://github.com/user-attachments/assets/8cbeaf01-02c1-49a8-9517-e756fd0f9a29}
+
+\section{Conclusão}
+
+Com \textbf{Suricata na própria VM} e \textbf{regras locais} simples, comprovamos a detecção de \textbf{URI}, \textbf{cabeçalhos}, \textbf{corpo HTTP} e \textbf{consultas DNS} por meio de cenários objetivos e reproduzíveis. A configuração evita dependências externas e foca em \textbf{didática}, \textbf{auditoria} e \textbf{visibilidade} do tráfego \textbf{HTTP/DNS}.
+
+\section*{Apêndice --- Troubleshooting rápido}
+\addcontentsline{toc}{section}{Apêndice --- Troubleshooting rápido}
+
+\begin{itemize}
+  \item \textbf{Sem alertas no \texttt{fast.log}:}
+    \begin{enumerate}
+      \item Confirme que o Suricata está \textbf{rodando}: \texttt{ps aux | grep '[s]uricata'}
+      \item Veja o log de inicialização: \texttt{sudo tail -n 30 /var/log/suricata/suricata.log}
+      \item Verifique \textbf{tráfego} na interface: \texttt{sudo tcpdump -ni enp0s3 'port 80 or port 53' -c 10}
+    \end{enumerate}
+
+  \item \textbf{Erro ``Failed to lookup configuration child node: (null)'' ao iniciar:} não use \texttt{--set outputs.*} no Debian. Inicie assim: \texttt{sudo suricata -i enp0s3 -S /etc/suricata/rules/local.rules -l /var/log/suricata -D}
+
+  \item \textbf{\texttt{pidfile} ``stale'' / conflito de instância:}
+\begin{lstlisting}
+sudo systemctl stop suricata
+sudo pkill -x suricata || true
+sudo rm -f /var/run/suricata.pid
+\end{lstlisting}
+
+  \item \textbf{Regras não carregam / erros de sintaxe:} cada regra deve estar \textbf{em uma única linha} (Snort-syntax). Valide com \texttt{-T}.
+
+  \item \textbf{HTTP não dispara (HSTS/HTTPS forçado):} use \texttt{http://neverssl.com} e force IPv4 com \texttt{curl -4}.
+
+  \item \textbf{Confirmar que os triggers realmente estão saindo:} para POST/HEADER, rode em paralelo \texttt{sudo tcpdump -A -ni enp0s3 'port 80' -c 10} e verifique o \texttt{POST}, o corpo e o cabeçalho \texttt{X-Trigger-Lab} em texto.
+
+  \item \textbf{Classificação diferente no log:} \texttt{classtype:attempted-recon} pode aparecer como \textbf{Attempted Information Leak} no \texttt{fast.log}.
+\end{itemize}
+
+\end{document}

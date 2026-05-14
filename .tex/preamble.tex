@@ -1,0 +1,131 @@
+% Preâmbulo compartilhado pelos relatórios T02 - Redes de Dados
+\documentclass[11pt,a4paper,oneside]{article}
+
+\usepackage[utf8]{inputenc}
+\usepackage[T1]{fontenc}
+\usepackage[brazilian]{babel}
+\usepackage{lmodern}
+\usepackage{microtype}
+
+\usepackage[a4paper,margin=2.5cm,top=2.5cm,bottom=2.5cm]{geometry}
+\usepackage{graphicx}
+\usepackage{xcolor}
+\usepackage{tabularx}
+\usepackage{longtable}
+\usepackage{booktabs}
+\usepackage{array}
+\usepackage{enumitem}
+\usepackage{titlesec}
+\usepackage{fancyhdr}
+\usepackage{listings}
+\usepackage{hyperref}
+\usepackage{caption}
+\usepackage{float}
+\usepackage{tcolorbox}
+\tcbuselibrary{skins,breakable}
+
+% Cores
+\definecolor{codebg}{RGB}{245,245,247}
+\definecolor{codeborder}{RGB}{220,220,225}
+\definecolor{codekey}{RGB}{0,90,160}
+\definecolor{codecom}{RGB}{100,110,120}
+\definecolor{codestr}{RGB}{40,140,80}
+\definecolor{noteblue}{RGB}{30,80,160}
+\definecolor{notebg}{RGB}{235,243,255}
+\definecolor{warnyellow}{RGB}{170,120,0}
+\definecolor{warnbg}{RGB}{255,248,225}
+
+% Hyperref
+\hypersetup{
+  colorlinks=true,
+  linkcolor=black,
+  urlcolor=codekey,
+  citecolor=black,
+  pdfborder={0 0 0}
+}
+
+% Cabeçalho/rodapé
+\pagestyle{fancy}
+\fancyhf{}
+\fancyhead[L]{\small T02 - Redes de Dados}
+\fancyhead[R]{\small \leftmark}
+\fancyfoot[C]{\thepage}
+\renewcommand{\headrulewidth}{0.4pt}
+
+% Listings (código)
+\lstdefinestyle{shell}{
+  backgroundcolor=\color{codebg},
+  basicstyle=\ttfamily\footnotesize,
+  keywordstyle=\color{codekey}\bfseries,
+  commentstyle=\color{codecom}\itshape,
+  stringstyle=\color{codestr},
+  numbers=none,
+  frame=single,
+  rulecolor=\color{codeborder},
+  framesep=4pt,
+  xleftmargin=6pt,
+  xrightmargin=6pt,
+  breaklines=true,
+  breakatwhitespace=false,
+  showstringspaces=false,
+  columns=fullflexible,
+  keepspaces=true,
+  literate=
+    {á}{{\'a}}1 {é}{{\'e}}1 {í}{{\'i}}1 {ó}{{\'o}}1 {ú}{{\'u}}1
+    {Á}{{\'A}}1 {É}{{\'E}}1 {Í}{{\'I}}1 {Ó}{{\'O}}1 {Ú}{{\'U}}1
+    {ã}{{\~a}}1 {õ}{{\~o}}1 {Ã}{{\~A}}1 {Õ}{{\~O}}1
+    {â}{{\^a}}1 {ê}{{\^e}}1 {ô}{{\^o}}1 {Â}{{\^A}}1 {Ê}{{\^E}}1 {Ô}{{\^O}}1
+    {ç}{{\c{c}}}1 {Ç}{{\c{C}}}1
+    {à}{{\`a}}1
+}
+\lstset{style=shell}
+
+% Caixas de nota/observação/atenção
+\newtcolorbox{notebox}{
+  enhanced, breakable,
+  colback=notebg, colframe=noteblue,
+  boxrule=0.6pt, arc=2pt,
+  left=8pt, right=8pt, top=4pt, bottom=4pt,
+  fonttitle=\bfseries
+}
+\newtcolorbox{warnbox}{
+  enhanced, breakable,
+  colback=warnbg, colframe=warnyellow,
+  boxrule=0.6pt, arc=2pt,
+  left=8pt, right=8pt, top=4pt, bottom=4pt,
+  fonttitle=\bfseries
+}
+
+% Placeholder para imagens remotas (GitHub user-attachments)
+% Uso: \imgph{largura}{URL ou descrição}
+\newcommand{\imgph}[2]{%
+  \begin{figure}[H]\centering
+    \fbox{\parbox[c][3.2cm][c]{#1}{\centering\footnotesize\itshape%
+      \textcolor{codecom}{[imagem]} \\ \tiny\url{#2}}}%
+  \end{figure}
+}
+
+% Espaçamento de seções
+\titleformat{\section}{\Large\bfseries\color{noteblue}}{\thesection.}{0.6em}{}
+\titleformat{\subsection}{\large\bfseries}{\thesubsection}{0.6em}{}
+\titleformat{\subsubsection}{\normalsize\bfseries}{\thesubsubsection}{0.6em}{}
+
+% Capa
+\newcommand{\capa}[2]{%
+  \begin{titlepage}
+    \centering
+    \vspace*{1.5cm}
+    % Logo: coloque o arquivo em .tex/img/logo.png
+    \IfFileExists{img/logo.png}{\includegraphics[width=4cm]{img/logo.png}}{%
+      \fbox{\parbox[c][3cm][c]{4cm}{\centering\footnotesize\itshape [logo.png]}}}
+    \vfill
+    {\large\bfseries T02 -- Redes de Dados\par}
+    \vspace{1cm}
+    {\Huge\bfseries\color{noteblue} #1\par}
+    \vspace{0.8cm}
+    {\large #2\par}
+    \vfill
+    {\large \today\par}
+    \vspace{1cm}
+  \end{titlepage}
+}

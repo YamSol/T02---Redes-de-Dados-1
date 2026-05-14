@@ -1,0 +1,446 @@
+\input{preamble}
+
+\begin{document}
+
+\capa{Relatório 10}{TLS em HTTP com Wireshark (VMs no VirtualBox)}
+
+\tableofcontents
+\newpage
+
+\noindent
+Este relatório tem como objetivo \textbf{montar um laboratório em NAT Network (rede NAT do VirtualBox)} para demonstrar o uso de \textbf{TLS} no protocolo \textbf{HTTP}, comparando o tráfego em texto claro (\textbf{HTTP sem TLS}) e criptografado (\textbf{HTTPS com TLS}) e \textbf{analisando as diferenças no Wireshark}.
+
+\begin{itemize}
+  \item \textbf{Material de apoio:} \url{https://github.com/vin1sss/T02---Redes-de-Dados-1/}
+\end{itemize}
+
+\section{Introdução}
+
+Nesta atividade, você configurará duas VMs (\textbf{user 1 - Debian} e \textbf{user 2 - Debian}) em uma \textbf{NAT Network} do VirtualBox para observar, via Wireshark no \textbf{user 2 - Debian}, como o TLS protege o conteúdo das mensagens HTTP. Em texto claro, o payload é legível; com TLS, apenas metadados e o \textbf{handshake} ficam visíveis.
+
+O TLS cria um canal cifrado sobre TCP por meio do \textit{handshake}, com negociação de chaves de sessão temporárias para proteger o tráfego de aplicação. Na prática, isso reduz a exposição a interceptação e leitura de conteúdo por terceiros no caminho.
+
+\textbf{Pilares abordados:} foco em \textbf{Confidencialidade} (com menção a Autenticidade/Integridade via certificados e MAC do TLS).
+
+\section{Conceitos e Fundamentos}
+
+\begin{itemize}
+  \item \textbf{HTTP x HTTPS:} HTTPS = HTTP sobre TLS (camada de segurança entre transporte e aplicação).
+  \item \textbf{TLS (Handshake):} ClientHello $\rightarrow$ ServerHello (+ certificado) $\rightarrow$ \textit{key exchange} $\rightarrow$ chaves de sessão $\rightarrow$ comunicação criptografada.
+  \item \textbf{Certificados:} neste lab usaremos certificado \textbf{autoassinado} no Apache.
+  \item \textbf{Wireshark:} filtros úteis \texttt{http}, \texttt{tls}, \texttt{tcp.port == 443}, \texttt{tls.handshake}.
+\end{itemize}
+
+\section{Ambiente e Topologia}
+
+\textbf{VirtualBox --- NAT Network:} \texttt{NatNetwork}
+
+\begin{warnbox}
+\textbf{Atenção:} neste relatório usamos \textbf{NAT Network} (rede compartilhada entre VMs). Isso é diferente de \textbf{NAT} simples por VM (\textit{Attached to: NAT}), que normalmente não permite comunicação direta entre as VMs.
+\end{warnbox}
+
+\subsection{Resumo do laboratório}
+
+\begin{tabularx}{\linewidth}{lX}
+\toprule
+\textbf{Elemento} & \textbf{Definição} \\
+\midrule
+Rede do VirtualBox & \textbf{NAT Network} \texttt{NatNetwork} \\
+user 1 - Debian & Servidor Apache, usando as portas \textbf{80} e \textbf{443} \\
+user 2 - Debian & Cliente de testes com \texttt{curl} e \textbf{Wireshark} \\
+Adaptadores das VMs & Uma placa por VM, ligada à \textbf{NAT Network} \\
+Recursos das VMs & \textbf{6 GB de RAM} e \textbf{3 núcleos de CPU} \\
+\bottomrule
+\end{tabularx}
+
+\subsection{Dados de referência usados no relatório}
+
+\begin{tabularx}{\linewidth}{lX}
+\toprule
+\textbf{Item} & \textbf{Uso} \\
+\midrule
+Senha das máquinas virtuais & \texttt{pytest} \\
+Senha solicitada pelo \texttt{sudo} & \texttt{pytest} \\
+\texttt{<IP\_USER1>} & IP atual do \textbf{user 1 - Debian} \\
+\texttt{<IP\_USER2>} & IP atual do \textbf{user 2 - Debian} \\
+\bottomrule
+\end{tabularx}
+
+\subsection{Pacotes usados no laboratório}
+
+\begin{itemize}
+  \item \textbf{user 1 - Debian:} \texttt{apache2}, \texttt{openssl}
+  \item \textbf{user 2 - Debian:} \texttt{curl}, \texttt{wireshark}
+\end{itemize}
+
+\subsection{Guia auxiliar de VirtualBox}
+
+\begin{notebox}
+Se não estiver conseguindo copiar e colar comandos entre o computador host e a VM, redimensionar a tela corretamente ou usar melhor a integração com o VirtualBox, consulte o guia \texttt{VirtualBox\_Guest\_Additions.md} para instalar o \textbf{VirtualBox Guest Additions}.
+\end{notebox}
+
+\section{Instalação e Preparação}
+
+\begin{notebox}
+Substitua as ocorrências de \texttt{<IP\_USER1>} e \texttt{<IP\_USER2>} pelos endereços obtidos nas suas VMs.
+\end{notebox}
+
+\subsection{Preparar a rede no VirtualBox}
+
+\begin{enumerate}
+\item \textbf{Abrir o gerenciador de redes NAT:}
+  \begin{itemize}
+    \item No VirtualBox, clique em \textbf{``Arquivos''}
+    \item Clique em \textbf{``Ferramentas''}
+    \item Clique em \textbf{``Gerenciador de Rede''}
+    \item Clique em \textbf{``Redes NAT''}
+  \end{itemize}
+
+\item \textbf{Se já existir \texttt{NatNetwork}, apenas confira se está configurada:}
+  \begin{itemize}
+    \item \textbf{Name:} \texttt{NatNetwork}
+    \item \textbf{IPv4 Prefix:} verifique o prefixo (ex.: \texttt{10.0.2.0/24})
+    \item \textbf{Habilitar DHCP:} Marcado
+  \end{itemize}
+
+\item \textbf{Se NÃO existir \texttt{NatNetwork}: criar uma:}
+  \begin{itemize}
+    \item Clique em \textbf{``Criar''}
+    \item \textbf{Name:} \texttt{NatNetwork}
+    \item \textbf{IPv4 Prefix:} ex.: \texttt{10.0.2.0/24} (padrão)
+    \item Marque \textbf{Habilitar DHCP}
+    \item Confirme com \textbf{Aplicar}
+  \end{itemize}
+
+\imgph{0.6\linewidth}{https://github.com/user-attachments/assets/a890ec72-c5da-49a0-81c3-e21ee7deb404}
+
+\item \textbf{Vincular cada VM à \texttt{NatNetwork}:}
+  \begin{itemize}
+    \item Para \textbf{user 1 - Debian} e \textbf{user 2 - Debian} $\rightarrow$ \textbf{Configurações} $\rightarrow$ \textbf{Rede}
+    \item \textbf{Adaptador 1} $\rightarrow$ \textbf{Conectado a:} \textit{NAT Network} $\rightarrow$ \textbf{Nome:} \texttt{NatNetwork}
+    \item OK
+  \end{itemize}
+
+\imgph{0.6\linewidth}{https://github.com/user-attachments/assets/3a4a1d8a-63b4-4c48-b06a-d65de72964a2}
+
+\item \textbf{Ajustar recursos de hardware das VMs:}
+  \begin{itemize}
+    \item VirtualBox $\rightarrow$ \textbf{Configurações} $\rightarrow$ \textbf{Sistema} $\rightarrow$ \textbf{Placa-mãe} $\rightarrow$ \textbf{Memória Base: 6144 MB (6 GB)}
+    \item VirtualBox $\rightarrow$ \textbf{Configurações} $\rightarrow$ \textbf{Sistema} $\rightarrow$ \textbf{Processador} $\rightarrow$ \textbf{Processadores: 3}
+    \item Após ajustar os recursos, \textbf{iniciar} as VMs
+  \end{itemize}
+
+\imgph{0.4\linewidth}{https://github.com/user-attachments/assets/4e1de125-9012-4b75-b395-e3aa73a179a8}
+\end{enumerate}
+
+\begin{notebox}
+\textbf{Ao final desta etapa:} as duas VMs devem estar ligadas, vinculadas à \texttt{NatNetwork} e prontas para receber IP via DHCP.
+\end{notebox}
+
+\subsection{Conferir IPs e validar a comunicação}
+
+\begin{enumerate}
+\item Em \textbf{cada VM Debian}, execute:
+\begin{lstlisting}
+ip a
+\end{lstlisting}
+
+\item Identifique o endereço IPv4 usado na interface conectada à \texttt{NatNetwork} e verifique se os IPs de \textbf{user 1 - Debian} e \textbf{user 2 - Debian} pertencem à \textbf{mesma faixa de rede}.
+  \begin{itemize}
+    \item Exemplo: se a \texttt{NatNetwork} estiver em \texttt{10.0.2.0/24}, os dois IPs devem seguir \texttt{10.0.2.x/24}.
+    \item Anote o IP do servidor como \texttt{<IP\_USER1>} e o do cliente como \texttt{<IP\_USER2>}.
+  \end{itemize}
+
+\imgph{0.8\linewidth}{https://github.com/user-attachments/assets/70c2e67a-184a-487b-a232-36a1759252e1}
+
+\item \textbf{Se os IPs estiverem compatíveis}, avance para o teste de comunicação.
+
+\item \textbf{Se os IPs não estiverem na mesma rede}, execute em \textbf{cada VM Debian}:
+\begin{lstlisting}
+IFACE=$(ip route | awk '/default/ {print $5; exit}')
+sudo dhclient -r "$IFACE" || true
+sudo ip addr flush dev "$IFACE"
+sudo dhclient "$IFACE"
+ip -4 a show "$IFACE"
+\end{lstlisting}
+
+\begin{notebox}
+A interface padrão em Debian no VirtualBox é normalmente \texttt{enp0s3}. Confirme com \texttt{ip route} ou \texttt{ip a}.
+\end{notebox}
+
+\item \textbf{Testar comunicação entre as VMs com \texttt{ping}:}
+
+No \textbf{user 2 - Debian}, execute:
+\begin{lstlisting}
+ping -c2 <IP_USER1>
+\end{lstlisting}
+
+No \textbf{user 1 - Debian}, execute:
+\begin{lstlisting}
+ping -c2 <IP_USER2>
+\end{lstlisting}
+
+\imgph{0.8\linewidth}{https://github.com/user-attachments/assets/e537c6a0-607b-4553-abec-e13e0b7375ad}
+\end{enumerate}
+
+\begin{notebox}
+\textbf{Ao final desta etapa:} as duas VMs devem estar na mesma rede e responder ao \texttt{ping} entre si.
+\end{notebox}
+
+\subsection{Preparar o servidor --- user 1 - Debian}
+
+\subsubsection*{A) Instalar dependências}
+
+\begin{lstlisting}
+sudo apt update && sudo apt install -y apache2 openssl
+\end{lstlisting}
+
+\imgph{0.55\linewidth}{https://github.com/user-attachments/assets/1592bc42-1a35-46b9-8e64-ac8779790f87}
+
+\subsubsection*{B) Criar página de teste com conteúdo identificável}
+
+\begin{lstlisting}
+sudo mkdir -p /var/www/html
+echo "<h1>HELLO_TLS_HTTP</h1>" | sudo tee /var/www/html/index.html
+\end{lstlisting}
+
+\imgph{0.5\linewidth}{https://github.com/user-attachments/assets/1d5ca830-2b83-4197-9bb3-a7fd1f6852c1}
+
+\subsubsection*{C) Ativar o Apache e verificar a porta HTTP}
+
+\begin{lstlisting}
+sudo systemctl enable --now apache2
+ss -tulpn | grep :80
+\end{lstlisting}
+
+\begin{notebox}
+\textbf{Resultado esperado:} deve aparecer uma linha indicando que o Apache está em estado \textbf{LISTEN} na porta \textbf{80}.
+\end{notebox}
+
+\imgph{0.55\linewidth}{https://github.com/user-attachments/assets/2c5dc094-4ede-4deb-90fd-0c3007cca55d}
+
+\begin{notebox}
+\textbf{Ao final desta etapa:} o servidor deve estar respondendo em \textbf{HTTP} na porta \textbf{80}.
+\end{notebox}
+
+\subsection{Preparar o cliente --- user 2 - Debian}
+
+\subsubsection*{A) Instalar \texttt{curl} e Wireshark}
+
+\begin{notebox}
+Observação: escolha ``Yes'' na configuração do Wireshark.
+\end{notebox}
+
+\begin{lstlisting}
+sudo apt update
+sudo apt install -y curl wireshark
+\end{lstlisting}
+
+\imgph{0.5\linewidth}{https://github.com/user-attachments/assets/92dbd981-4482-47f4-a52c-a111d0a10500}
+
+\subsubsection*{B) Abrir o Wireshark e identificar a interface de captura}
+
+\begin{lstlisting}
+sudo wireshark
+\end{lstlisting}
+
+Esse comando \textbf{apenas abre o programa}. Na tela inicial, identifique a \textbf{interface da NAT Network} (a que mostra o IP do \textbf{user 2 - Debian}, costuma ser \texttt{enp0s3}) e deixe o Wireshark pronto para iniciar a captura no próximo passo.
+
+\imgph{0.7\linewidth}{https://github.com/user-attachments/assets/9e375ed7-f018-4bb6-9ffd-9ccbb67e950a}
+
+Durante a análise dos pacotes, use como referência o filtro:
+\begin{lstlisting}
+ip.addr == <IP_USER1>
+\end{lstlisting}
+
+\begin{notebox}
+\textbf{Ao final desta etapa:} o cliente deve estar com \texttt{curl} instalado, o Wireshark aberto e a interface correta já identificada.
+
+\textbf{Observação:} os filtros indicados neste relatório são \textbf{filtros de exibição} no Wireshark, usados para localizar melhor os pacotes já capturados.
+\end{notebox}
+
+\section{Procedimentos (Passo a Passo)}
+
+\subsection*{Checklist antes dos testes}
+
+Antes de iniciar os cenários, confirme:
+\begin{itemize}
+  \item o IP do servidor está anotado como \texttt{<IP\_USER1>};
+  \item o Apache responde em \textbf{HTTP} na porta \textbf{80};
+  \item o Wireshark está aberto no \textbf{user 2 - Debian};
+  \item a interface da \textbf{NAT Network} já foi identificada (costuma ser \texttt{enp0s3}).
+\end{itemize}
+
+\subsection{Cenário 1 --- HTTP sem TLS (porta 80)}
+
+\subsubsection*{A) Preparar a captura}
+
+\textbf{No user 2 - Debian:} com o Wireshark já aberto, \textbf{inicie a captura} na interface da \textbf{NAT Network} identificada anteriormente.
+
+\imgph{0.3\linewidth}{https://github.com/user-attachments/assets/480f3519-fe3c-4dfd-8cec-329fc63a8c0d}
+
+\imgph{0.6\linewidth}{https://github.com/user-attachments/assets/e8be4387-047f-4705-a085-4eafb714164f}
+
+\begin{notebox}
+O quadrado vermelho indica que a captura está ativa.
+\end{notebox}
+
+\subsubsection*{B) Executar o teste HTTP}
+
+No \textbf{user 2 - Debian}, execute:
+\begin{lstlisting}
+curl -v http://<IP_USER1>
+\end{lstlisting}
+
+\begin{notebox}
+\textbf{Resultado esperado:} o \texttt{curl} deve completar a requisição e exibir a resposta do Apache, incluindo \texttt{HELLO\_TLS\_HTTP}.
+\end{notebox}
+
+\imgph{0.45\linewidth}{https://github.com/user-attachments/assets/3c0016d3-3879-4451-94a3-f9b2ad3f8a92}
+
+\subsubsection*{C) Observar no Wireshark}
+
+\begin{enumerate}
+\item \textbf{Pause a captura} no Wireshark.
+
+\imgph{0.2\linewidth}{https://github.com/user-attachments/assets/cfedfeba-6545-4297-aa1b-530b14688ed8}
+
+\item Aplique o filtro:
+\begin{lstlisting}
+http && ip.addr == <IP_USER1>
+\end{lstlisting}
+
+\item \textbf{O que observar:} requisição \texttt{GET / HTTP/1.1} e resposta \texttt{200 OK} com \textbf{payload legível} (HTML contendo \texttt{HELLO\_TLS\_HTTP}).
+
+\imgph{0.7\linewidth}{https://github.com/user-attachments/assets/43497e00-b9d0-436b-8072-859dcaa368e0}
+\imgph{0.5\linewidth}{https://github.com/user-attachments/assets/2310e98c-7f1a-40fc-887a-592cdceb22a9}
+\end{enumerate}
+
+\begin{notebox}
+\textbf{Ao final deste cenário:} o tráfego HTTP deve aparecer em texto claro no Wireshark.
+\end{notebox}
+
+\subsection{Cenário 2 --- HTTP com TLS (HTTPS na porta 443)}
+
+\subsubsection*{A) Preparar HTTPS no servidor --- user 1 - Debian}
+
+\textbf{Ativar SSL no Apache:}
+\begin{lstlisting}
+sudo a2enmod ssl
+sudo a2ensite default-ssl
+sudo systemctl reload apache2
+\end{lstlisting}
+
+\imgph{0.5\linewidth}{https://github.com/user-attachments/assets/46ea3fc5-5434-44a8-8773-2cb63ed55ee3}
+
+\begin{notebox}
+Caso apareça um erro relacionado ao Apache, ignore --- ele apenas indica que o Apache não estava rodando anteriormente.
+\end{notebox}
+
+\textbf{Gerar certificado autoassinado (1 ano):}
+\begin{lstlisting}
+sudo openssl req -x509 -nodes -days 365 -newkey rsa:2048 \
+  -keyout /etc/ssl/private/apache.key \
+  -out /etc/ssl/certs/apache.crt \
+  -subj "/C=BR/ST=MG/L=Inatel/O=Lab/OU=NetSec/CN=<IP_USER1>"
+\end{lstlisting}
+
+\imgph{0.7\linewidth}{https://github.com/user-attachments/assets/fa045612-e0ef-4120-9123-b8f47b2144ff}
+
+\textbf{Apontar o vhost SSL para o certificado/chave e reiniciar Apache:}
+\begin{lstlisting}
+sudo sed -i 's#SSLCertificateFile .*#SSLCertificateFile /etc/ssl/certs/apache.crt#' /etc/apache2/sites-available/default-ssl.conf
+sudo sed -i 's#SSLCertificateKeyFile .*#SSLCertificateKeyFile /etc/ssl/private/apache.key#' /etc/apache2/sites-available/default-ssl.conf
+sudo systemctl restart apache2
+ss -tulpn | grep :443
+\end{lstlisting}
+
+\begin{notebox}
+\textbf{Resultado esperado:} Apache em estado \textbf{LISTEN} na porta \textbf{443}.
+\end{notebox}
+
+\imgph{0.7\linewidth}{https://github.com/user-attachments/assets/baaaf721-a9ce-4249-8f87-748c2494a942}
+
+\subsubsection*{B) Reiniciar a captura e executar o teste HTTPS --- user 2 - Debian}
+
+No Wireshark, \textbf{reinicie a captura} na interface da \textbf{NAT Network} para registrar somente o tráfego do novo teste.
+
+\imgph{0.6\linewidth}{https://github.com/user-attachments/assets/069ce333-c2a3-46b4-8ada-6343845d21f3}
+\imgph{0.6\linewidth}{https://github.com/user-attachments/assets/e8be4387-047f-4705-a085-4eafb714164f}
+
+Execute:
+\begin{lstlisting}
+curl -vk https://<IP_USER1>
+\end{lstlisting}
+
+\begin{notebox}
+O \texttt{-k} é intencional no laboratório: ele permite seguir com certificado autoassinado. \textbf{Resultado esperado:} a conexão HTTPS deve funcionar mesmo com o certificado autoassinado.
+\end{notebox}
+
+\imgph{0.55\linewidth}{https://github.com/user-attachments/assets/b612937e-31f3-40ec-9cfc-715101247637}
+
+\subsubsection*{C) Observar no Wireshark}
+
+\begin{enumerate}
+\item \textbf{Pause a captura} no Wireshark.
+\item Remova o filtro anterior (se houver).
+\item Aplique o filtro:
+\begin{lstlisting}
+tls && ip.addr == <IP_USER1>
+\end{lstlisting}
+\item \textbf{O que observar:} pacotes de \textbf{handshake TLS} (ClientHello/ServerHello/Certificado) e \textbf{payload cifrado}.
+\end{enumerate}
+
+\imgph{0.8\linewidth}{https://github.com/user-attachments/assets/033753e3-daae-4dfd-966a-ce779528bdf9}
+\imgph{0.8\linewidth}{https://github.com/user-attachments/assets/304bdb65-de32-46b1-a97e-19e5b85d3833}
+
+\begin{notebox}
+\textbf{Ao final deste cenário:} o conteúdo da aplicação não deve aparecer legível no Wireshark; apenas o handshake e os dados criptografados ficam visíveis.
+\end{notebox}
+
+\section{Verificação e Resultados}
+
+\subsection{Checklist de sucesso do experimento}
+
+\begin{itemize}
+  \item \textbf{Cenário HTTP (porta 80):} \texttt{curl -v http://<IP\_USER1>} retorna conteúdo e o Wireshark mostra \texttt{GET}/\texttt{200 OK} com payload legível.
+  \item \textbf{Cenário HTTPS (porta 443):} \texttt{curl -vk https://<IP\_USER1>} funciona, e no Wireshark aparecem \texttt{ClientHello}/\texttt{ServerHello} com payload cifrado.
+\end{itemize}
+
+\subsection{Quadro comparativo}
+
+\begin{tabularx}{\linewidth}{lccXX}
+\toprule
+\textbf{Protocolo} & \textbf{Porta} & \textbf{TLS} & \textbf{Visível no Wireshark} & \textbf{Payload} \\
+\midrule
+HTTP  & 80  & Não & Métodos/URLs, cabeçalhos, corpo & \textbf{Legível} (\texttt{HELLO\_TLS\_HTTP}) \\
+HTTPS & 443 & Sim & Handshake (ClientHello/ServerHello/Cert), \textit{Application Data} & \textbf{Ilegível} \\
+\bottomrule
+\end{tabularx}
+
+\subsection{Filtros práticos (copiar/colar)}
+
+\begin{itemize}
+  \item HTTP claro: \texttt{http}
+  \item HTTPS: \texttt{tls} (ou \texttt{tcp.port == 443})
+  \item Handshake específico: \texttt{tls.handshake}
+  \item Verificar string no tráfego claro: \texttt{frame contains "HELLO\_TLS\_HTTP"}
+\end{itemize}
+
+\section{Conclusão}
+
+Foi demonstrado, de forma prática, que a adoção de \textbf{TLS} em HTTP protege a \textbf{confidencialidade} das mensagens. Enquanto no tráfego sem TLS foi possível ler o payload em claro, no tráfego com TLS o Wireshark exibiu apenas metadados do handshake e pacotes cifrados.
+
+\section*{Apêndice --- Troubleshooting rápido}
+\addcontentsline{toc}{section}{Apêndice --- Troubleshooting rápido}
+
+\begin{itemize}
+  \item \textbf{Não vejo tráfego no Wireshark:} selecione a interface da NAT Network correta e gere tráfego com \texttt{curl} no user 2 - Debian.
+  \item \textbf{HTTPS não sobe:} confirme \texttt{a2enmod ssl}, \texttt{a2ensite default-ssl}, caminhos de certificado no \texttt{default-ssl.conf} e reinício do Apache.
+  \item \textbf{\texttt{curl -vk https://<IP\_USER1>} falha:} verifique se a porta 443 está em LISTEN (\texttt{ss -lntp | grep :443}).
+  \item \textbf{\texttt{ping} entre as VMs falha:} confirme que ambas estão em \textbf{NAT Network (\texttt{NatNetwork})}, mesma faixa de rede e endereço correto de destino.
+  \item \textbf{VMs não se enxergam:} confirme ambas em \textbf{NAT Network (\texttt{NatNetwork})} com DHCP ON.
+  \item \textbf{Wireshark não abre ou não captura corretamente:} execute novamente com \texttt{sudo wireshark} e confirme que a interface da NAT Network foi selecionada.
+\end{itemize}
+
+\end{document}
