@@ -354,7 +354,7 @@ Demonstrou-se, com **duas VMs** (pfSense e Debian), que o **pfSense** aplica **p
 
 ---
 
-## Apêndice — Troubleshooting rápido
+## Apêndice 1 — Troubleshooting rápido
 
 * **Debian sem IP na LAN:** confirme **Rede Interna `LAN_PFS`** no adaptador e que o **DHCP da LAN** do pfSense está ativo.
 * **Sem acesso à WebGUI:** use `https://192.168.1.1` (ou IP LAN do pfSense) e aceite o certificado; verifique se a regra **allow LAN to any** não foi removida.
@@ -362,3 +362,12 @@ Demonstrou-se, com **duas VMs** (pfSense e Debian), que o **pfSense** aplica **p
 * **Site específico ainda abre:** confirme a **ordem** da regra, o **alias** (`BLOCK_WIKI` → `www.wikipedia.org`), limpe o **cache DNS** do cliente e aguarde a **atualização do alias** pelo pfSense.
 * **`http://neverssl.com` abre mesmo bloqueado:** verifique se a regra de **porta 80** está no **topo** e se não há regra conflitante; confira os **logs** do pfSense.
 * **`ping 8.8.8.8` ainda sai:** confirme a regra **Block ICMP** e que a exceção **ALLOW_ICMP_TO_GATEWAY** está **acima** dela.
+
+
+## Apêndice 2 — Tela preta ao carregar a interface gráfica (VirtualBox)**
+
+ O Debian usa **Wayland** por padrão, que pode ser incompatível com o VirtualBox. Quando a tela ficar escura, pressione **Ctrl + Alt + F2**, faça login e execute:
+ ```bash
+ sudo nano /etc/gdm3/daemon.conf
+ ```
+ Localize `#WaylandEnable=false`, remova o `#`, salve e reinicie. Se não resolver, verifique nas configurações da VM: controladora **VMSVGA**, **aceleração 3D desativada**.
